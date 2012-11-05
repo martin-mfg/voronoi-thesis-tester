@@ -2,14 +2,11 @@ import icons.Icons;
 
 import java.awt.AWTException;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Polygon;
 import java.awt.Robot;
-import java.awt.Shape;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -74,16 +71,6 @@ public class JMalPanel extends JPanel implements MouseListener,
 		for (Paintable paintable : paintables) {
 			paintable.paintObject(sg);
 		}
-
-		int[] xVals = { 10, 30, 40, 10 };
-		int[] yVals = { 30, 25, 70, 65 };
-
-		Shape s = new Polygon(xVals, yVals, 4);
-
-		sg.draw(s);
-
-		sg.setColor(Color.green);
-		sg.fill(s);
 	}
 
 	public void addPaintable(Paintable newPaintable) {

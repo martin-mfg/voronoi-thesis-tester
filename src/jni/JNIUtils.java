@@ -1,4 +1,4 @@
-package jniutils;
+package jni;
 
 public class JNIUtils {
 

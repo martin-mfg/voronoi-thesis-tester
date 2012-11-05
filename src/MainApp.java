@@ -5,7 +5,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import jniutils.JNITest;
+import jni.JNITest;
 
 public class MainApp extends JFrame {
 
@@ -24,14 +24,6 @@ public class MainApp extends JFrame {
 
 			@Override
 			public void run() {
-
-				// String lp = System.getProperty("java.library.path");
-				// System.out.println(lp);
-				// System.setProperty(
-				// "java.library.path",
-				// lp.substring(0, lp.length() - 2)
-				// + ";C:\\Users\\Icke_2\\workspace\\voronoieditor\\lib;.");
-				// System.out.println(System.getProperty("java.library.path"));
 				JNITest.test();
 				MainApp.getInstance().startProgram();
 			}
