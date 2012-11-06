@@ -1,0 +1,1 @@
+gcc -shared -Wl,--kill-at -I "C:\Program Files\Java\jdk1.7.0_02\include" -I "C:\Program Files\Java\jdk1.7.0_02\include\win32" %1 -o %2

@@ -9,6 +9,6 @@ public class JNITest {
 	}
 
 	static {
-		System.loadLibrary("hello");
+		System.loadLibrary("hello32");
 	}
 }
