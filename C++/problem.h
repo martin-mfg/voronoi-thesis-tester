@@ -33,7 +33,7 @@ struct Voronoi{
   }
   
   void reset(){
-m_cropped_vd.erase(m_cropped_vd.begin(), m_cropped_vd.end());
+	m_cropped_vd.erase(m_cropped_vd.begin(), m_cropped_vd.end());
 }
 
   void operator<<(const Ray& ray)    { crop_and_extract_segment(ray); }
