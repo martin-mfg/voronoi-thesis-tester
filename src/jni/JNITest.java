@@ -9,6 +9,10 @@ public class JNITest {
 	}
 
 	static {
-		System.loadLibrary("hello32");
+		if ((System.getProperty("os.name")=="Linux"))
+			System.loadLibrary("hello32.so");
+		else
+			System.load("/opt/hello32.so");
+    	
 	}
 }

@@ -1,0 +1,4 @@
+#!/bin/bash
+gcc -Wall -fPIC -c *.c -I  /usr/lib/jvm/java-7-openjdk-i386/include/
+gcc -shared -Wl,-soname,hello32.so.1 -o hello32.so *.o 
+cp hello32.so /opt/
