@@ -8,9 +8,8 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Robot;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,44 +18,51 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
+import javax.swing.border.BevelBorder;
 
-public class JMalPanel extends JPanel implements MouseListener,
-		MouseMotionListener {
+public class JMalPanel extends JPanel {
 
 	private static enum State {
 		Add, Move, Remove;
 	}
 
-	private static final int					GRID_SIZE				= 20;
+	private static final int GRID_SIZE = 20;
 
-	private static final int					CATCH_RADIUS			= 10;
+	private static final int CATCH_RADIUS = 10;
 
-	private List<Paintable>						paintables				= new ArrayList<Paintable>();
+	private Map<Paintable.PaintableType, List<Paintable>> paintables = new HashMap<Paintable.PaintableType, List<Paintable>>();
 
-	private Map<CoordinatePair, Set<Catchable>>	gridMap					= new HashMap<CoordinatePair, Set<Catchable>>();
+	private Map<CoordinatePair, Set<Catchable>> gridMap = new HashMap<CoordinatePair, Set<Catchable>>();
 
-	private JToolBar							toolBar					= new JMyToolBar();
+	private JToolBar toolBar = new JMyToolBar();
 
-	private Catchable							currentCaughtCatchable	= null;
+	private JComponent drawingArea;
 
-	private Catchable							catchableDragged		= null;
+	private Catchable currentCaughtCatchable = null;
 
-	private State								state					= null;
+	private Catchable catchableDragged = null;
 
-	private Robot								robot;
+	private State state = null;
 
-	private Dot.DotColor						currentDotColor			= Dot.DotColor.RED;
+	private Robot robot;
+
+	private MouseAdapter mouseAdapter = new MyMouseListener();
+
+	private Dot.DotColor currentDotColor = Dot.DotColor.RED;
 
 	public JMalPanel() {
 		super(new BorderLayout());
+		initDrawingArea();
+		add(drawingArea, BorderLayout.CENTER);
 		add(toolBar, BorderLayout.NORTH);
-		addMouseListener(this);
 		setOpaque(false);
 		try {
 			robot = new Robot();
@@ -65,12 +71,29 @@ public class JMalPanel extends JPanel implements MouseListener,
 		}
 	}
 
-	@Override
-	protected void paintComponent(Graphics g) {
-		Graphics2D sg = (Graphics2D) g;
-		for (Paintable paintable : paintables) {
-			paintable.paintObject(sg);
-		}
+	private void initDrawingArea() {
+		drawingArea = new JPanel() {
+
+			@Override
+			protected void paintComponent(Graphics g) {
+				Graphics2D sg = (Graphics2D) g;
+				if (paintables.containsKey(Paintable.PaintableType.Point)) {
+					for (Paintable paintable : paintables
+							.get(Paintable.PaintableType.Point)) {
+						paintable.paintObject(sg);
+					}
+				}
+				if (paintables.containsKey(Paintable.PaintableType.Edge)) {
+					for (Paintable paintable : paintables
+							.get(Paintable.PaintableType.Edge)) {
+						paintable.paintObject(sg);
+					}
+				}
+			}
+		};
+		drawingArea.setBorder(BorderFactory
+				.createBevelBorder(BevelBorder.LOWERED));
+		drawingArea.addMouseListener(mouseAdapter);
 	}
 
 	public void addPaintable(Paintable newPaintable) {
@@ -86,7 +109,12 @@ public class JMalPanel extends JPanel implements MouseListener,
 				gridMap.get(gridCell).add(newCatchable);
 			}
 		}
-		paintables.add(newPaintable);
+
+		if (!paintables.containsKey(newPaintable.getType())) {
+			paintables.put(newPaintable.getType(), new ArrayList<Paintable>());
+		}
+
+		paintables.get(newPaintable.getType()).add(newPaintable);
 		repaint();
 	}
 
@@ -99,96 +127,10 @@ public class JMalPanel extends JPanel implements MouseListener,
 				gridMap.get(gridCell).remove(catchable);
 			}
 		}
-		paintables.remove(paintable);
+		if (paintables.containsKey(paintable.getType())) {
+			paintables.get(paintable.getType()).remove(paintable);
+		}
 		repaint();
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		if (e.getButton() == MouseEvent.BUTTON1 && state != null) {
-			switch (state) {
-				case Add:
-					addPaintable(new Dot(e.getX(), e.getY(), currentDotColor));
-					break;
-				case Move:
-					if (currentCaughtCatchable != null) {
-						CoordinatePair cp = currentCaughtCatchable
-								.getDragPosition();
-						Point p = new Point(cp.getX(), cp.getY());
-						SwingUtilities.convertPointToScreen(p, this);
-						robot.mouseMove((int) p.getX(), (int) p.getY());
-
-						catchableDragged = currentCaughtCatchable;
-					}
-				case Remove:
-					if (currentCaughtCatchable != null) {
-						removePaintable(currentCaughtCatchable);
-						currentCaughtCatchable = null;
-					}
-					break;
-				default:
-			}
-		}
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		if (state == State.Move && catchableDragged != null) {
-			catchableDragged.moveTo(e.getX(), e.getY());
-			addPaintable(catchableDragged);
-			catchableDragged = null;
-
-			repaint();
-		}
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-
-	}
-
-	@Override
-	public void mouseDragged(MouseEvent e) {
-	}
-
-	@Override
-	public void mouseMoved(MouseEvent e) {
-		CoordinatePair mousePosition = new CoordinatePair(e.getX(), e.getY());
-		CoordinatePair[] gridCells = new CoordinatePair[4];
-		int mainX = (e.getX() + GRID_SIZE / 2) / GRID_SIZE;
-		int mainY = (e.getY() + GRID_SIZE / 2) / GRID_SIZE;
-		gridCells[0] = new CoordinatePair(mainX, mainY);
-		gridCells[1] = new CoordinatePair(mainX - 1, mainY);
-		gridCells[2] = new CoordinatePair(mainX, mainY - 1);
-		gridCells[3] = new CoordinatePair(mainX - 1, mainY - 1);
-
-		double min = CATCH_RADIUS;
-		double dist;
-		Catchable closestCatchable = null;
-
-		for (CoordinatePair gridCell : gridCells) {
-			Set<Catchable> catchables = gridMap.get(gridCell);
-			if (!(catchables == null || catchables.isEmpty())) {
-				for (Catchable catchable : catchables) {
-					dist = catchable.getDistanceTo(mousePosition);
-					if (dist < min) {
-						closestCatchable = catchable;
-						min = dist;
-					}
-				}
-			}
-		}
-
-		changeCurrentCatchable(closestCatchable);
-
 	}
 
 	private void changeCurrentCatchable(Catchable catchable) {
@@ -207,15 +149,15 @@ public class JMalPanel extends JPanel implements MouseListener,
 
 	private class JMyToolBar extends JToolBar {
 
-		private ButtonGroup		buttons;
+		private ButtonGroup buttons;
 
-		private JToggleButton	createButton;
+		private JToggleButton createButton;
 
-		private JToggleButton	moveButton;
+		private JToggleButton moveButton;
 
-		private JToggleButton	removeButton;
+		private JToggleButton removeButton;
 
-		private JButton			colorChangeButton;
+		private JButton colorChangeButton;
 
 		private JMyToolBar() {
 			setFloatable(false);
@@ -230,9 +172,8 @@ public class JMalPanel extends JPanel implements MouseListener,
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					state = State.Add;
-					JMalPanel.this
-							.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-					JMalPanel.this.removeMouseMotionListener(JMalPanel.this);
+					drawingArea.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+					drawingArea.removeMouseMotionListener(mouseAdapter);
 				}
 			});
 			moveButton.setAction(new AbstractAction("move") {
@@ -240,9 +181,9 @@ public class JMalPanel extends JPanel implements MouseListener,
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					state = State.Move;
-					JMalPanel.this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-					JMalPanel.this.removeMouseMotionListener(JMalPanel.this);
-					JMalPanel.this.addMouseMotionListener(JMalPanel.this);
+					drawingArea.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+					drawingArea.removeMouseMotionListener(mouseAdapter);
+					drawingArea.addMouseMotionListener(mouseAdapter);
 				}
 			});
 			removeButton.setAction(new AbstractAction("remove") {
@@ -250,9 +191,9 @@ public class JMalPanel extends JPanel implements MouseListener,
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					state = State.Remove;
-					JMalPanel.this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-					JMalPanel.this.removeMouseMotionListener(JMalPanel.this);
-					JMalPanel.this.addMouseMotionListener(JMalPanel.this);
+					drawingArea.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+					drawingArea.removeMouseMotionListener(mouseAdapter);
+					drawingArea.addMouseMotionListener(mouseAdapter);
 				}
 			});
 
@@ -280,5 +221,81 @@ public class JMalPanel extends JPanel implements MouseListener,
 			addSeparator();
 			add(colorChangeButton);
 		}
+	}
+
+	// ------------------------------------------------------------------------
+
+	private class MyMouseListener extends MouseAdapter {
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			if (e.getButton() == MouseEvent.BUTTON1 && state != null) {
+				switch (state) {
+				case Add:
+					addPaintable(new Dot(e.getX(), e.getY(), currentDotColor));
+					break;
+				case Move:
+					if (currentCaughtCatchable != null) {
+						CoordinatePair cp = currentCaughtCatchable
+								.getDragPosition();
+						Point p = new Point(cp.getX(), cp.getY());
+						SwingUtilities.convertPointToScreen(p, drawingArea);
+						robot.mouseMove((int) p.getX(), (int) p.getY());
+
+						catchableDragged = currentCaughtCatchable;
+					}
+				case Remove:
+					if (currentCaughtCatchable != null) {
+						removePaintable(currentCaughtCatchable);
+						currentCaughtCatchable = null;
+					}
+					break;
+				default:
+				}
+			}
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			if (state == State.Move && catchableDragged != null) {
+				catchableDragged.moveTo(e.getX(), e.getY());
+				addPaintable(catchableDragged);
+				catchableDragged = null;
+
+				repaint();
+			}
+		}
+
+		@Override
+		public void mouseMoved(MouseEvent e) {
+			CoordinatePair mousePosition = new CoordinatePair(e.getX(),
+					e.getY());
+			CoordinatePair[] gridCells = new CoordinatePair[4];
+			int mainX = (e.getX() + GRID_SIZE / 2) / GRID_SIZE;
+			int mainY = (e.getY() + GRID_SIZE / 2) / GRID_SIZE;
+			gridCells[0] = new CoordinatePair(mainX, mainY);
+			gridCells[1] = new CoordinatePair(mainX - 1, mainY);
+			gridCells[2] = new CoordinatePair(mainX, mainY - 1);
+			gridCells[3] = new CoordinatePair(mainX - 1, mainY - 1);
+
+			double min = CATCH_RADIUS;
+			double dist;
+			Catchable closestCatchable = null;
+
+			for (CoordinatePair gridCell : gridCells) {
+				Set<Catchable> catchables = gridMap.get(gridCell);
+				if (!(catchables == null || catchables.isEmpty())) {
+					for (Catchable catchable : catchables) {
+						dist = catchable.getDistanceTo(mousePosition);
+						if (dist < min) {
+							closestCatchable = catchable;
+							min = dist;
+						}
+					}
+				}
+			}
+			changeCurrentCatchable(closestCatchable);
+		}
+
 	}
 }

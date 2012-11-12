@@ -3,9 +3,9 @@ import java.util.Set;
 
 public abstract class Catchable implements Paintable {
 
-	protected Set<CoordinatePair>	catchPoints	= new HashSet<CoordinatePair>();
+	protected Set<CoordinatePair> catchPoints = new HashSet<CoordinatePair>();
 
-	private boolean					isCaught;
+	private boolean isCaught;
 
 	public Set<CoordinatePair> getCatchPoints() {
 		return catchPoints;

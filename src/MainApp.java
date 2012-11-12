@@ -1,15 +1,14 @@
 import java.awt.Dimension;
+import java.util.Arrays;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import jni.JNITest;
-
 public class MainApp extends JFrame {
 
-	private static MainApp	instance;
+	private static MainApp instance;
 
 	public static MainApp getInstance() {
 		if (instance == null) {
@@ -24,7 +23,7 @@ public class MainApp extends JFrame {
 
 			@Override
 			public void run() {
-				JNITest.test();
+				// JNITest.test();
 				MainApp.getInstance().startProgram();
 			}
 		});
@@ -36,18 +35,20 @@ public class MainApp extends JFrame {
 	}
 
 	private void startProgram() {
-		setLookAndFeel();
+		// setLookAndFeel();
 		showGUI();
 	}
 
 	private void setLookAndFeel() {
 		try {
-			Class.forName("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+			System.out.println(Arrays.toString(UIManager
+					.getInstalledLookAndFeels()));
+			Class.forName("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 			UIManager
-					.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+					.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		} catch (ClassNotFoundException e) {
 			System.out
-					.println("ClassNotFoundException: WindowsLookAndFeel not found");
+					.println("ClassNotFoundException: NimbusLookAndFeel not found");
 		} catch (InstantiationException | IllegalAccessException
 				| UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
@@ -58,6 +59,9 @@ public class MainApp extends JFrame {
 
 		// PaintPanel erstellen und in das Fenster legen
 		JMalPanel panel = new JMalPanel();
+
+		inputTestData(panel);
+
 		panel.setPreferredSize(new Dimension(400, 300));
 		getContentPane().add(panel);
 
@@ -65,5 +69,25 @@ public class MainApp extends JFrame {
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);
+	}
+
+	private void inputTestData(JMalPanel panel) {
+		double[] data0 = { 0, 40, 50, 70, 1 };
+		double[] data1 = { 50, 70, 150, 80, 0 };
+		double[] data2 = { 150, 80, 120, 170, 0 };
+		double[] data3 = { 150, 80, 230, 20, 1 };
+		double[] data4 = { 120, 170, 0, 190, 1 };
+		double[] data5 = { 120, 170, 110, 300, 1 };
+		double[] data6 = { 50, 70, 0, 100, 1 };
+		double[] data7 = { 20, 40, 30, 70, 1 };
+
+		panel.addPaintable(new VoronoiEdge(data0));
+		panel.addPaintable(new VoronoiEdge(data1));
+		panel.addPaintable(new VoronoiEdge(data2));
+		panel.addPaintable(new VoronoiEdge(data3));
+		panel.addPaintable(new VoronoiEdge(data4));
+		panel.addPaintable(new VoronoiEdge(data5));
+		panel.addPaintable(new VoronoiEdge(data6));
+		panel.addPaintable(new VoronoiEdge(data7));
 	}
 }

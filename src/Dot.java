@@ -7,11 +7,11 @@ public class Dot extends Catchable implements Paintable {
 		RED, BLUE;
 	}
 
-	private double		x;
+	private double x;
 
-	private double		y;
+	private double y;
 
-	private DotColor	color;
+	private DotColor color;
 
 	public Dot(int x, int y, DotColor col) {
 		super();
@@ -53,5 +53,10 @@ public class Dot extends Catchable implements Paintable {
 	@Override
 	public void moveTo(double x, double y) {
 		setPos(x, y);
+	}
+
+	@Override
+	public PaintableType getType() {
+		return PaintableType.Point;
 	}
 }
