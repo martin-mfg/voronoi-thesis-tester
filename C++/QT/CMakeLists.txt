@@ -16,7 +16,8 @@ if ( CGAL_FOUND )
   
   find_package(Qt4 REQUIRED )  
   if(CGAL_Qt4_FOUND AND QT4_FOUND)
-    include( Qt4Macros )
+    	# I commented this line out because it threw errors
+	#include( Qt4Macros )
     SET( QT_USE_QT3SUPPORT TRUE )
     SET( QT_USE_QTXML TRUE )
     qt4_automoc( main.cpp problem.cpp moc_mygraphics.cpp mygraphics.cpp mygraphics.h )

@@ -2,6 +2,8 @@
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Delaunay_triangulation_2.h>
 #include <iterator>
+#include "Edge.h"
+#include <QtGui>
 
 
 using ::std::cout;
@@ -55,11 +57,12 @@ public:
 	Triangulation red_t;
 	Triangulation blue_red_t;
 	Voronoi red_vor,blue_red_vor;
+	Rectangle bounding_box;
 
 	Problem (){
-		Rectangle box(-1000.0,-1000.0,1000.0,1000.0);
-		red_vor.set_box(box);
-		blue_red_vor.set_box(box);
+		bounding_box = Rectangle(-1000.0,-1000.0,1000.0,1000.0);
+		red_vor.set_box(bounding_box);
+		blue_red_vor.set_box(bounding_box);
 	}
 
 	void update(){ create_triangulations();}
@@ -90,13 +93,57 @@ public:
 		blue_red_t.remove(blue_red_t.nearest_vertex(p));
 	}
 
-	vector <Point> get_voronoi_edges(){		
-		red_t.draw_dual(red_vor);
-		vector <Point> edge_points;
-		while(red_vor.m_cropped_vd.size()){
-			edge_points.push_back(red_vor.m_cropped_vd.back().source());
-			edge_points.push_back(red_vor.m_cropped_vd.back().target());
-			red_vor.m_cropped_vd.pop_back();
+	QColor getColor( Point p ) {
+		for(std::vector<Point>::iterator it = red_points.begin(); it != red_points.end(); ++it) {
+			if( p.x() == it -> x() && p.y() == it -> y() ) {
+				return Qt::red;
+			}
+		}
+		return QColor(0,136,255);
+	}
+
+	vector <Edge> get_voronoi_edges(){		
+		Triangulation::Finite_edges_iterator it;
+		vector <Edge> edge_points;
+		Point source, target, delaunay_source, delaunay_target;
+		for (it = blue_red_t.finite_edges_begin(); it != blue_red_t.finite_edges_end(); it++) {
+			//create the dual voronoi edge (segment) for the delaunay edge
+			CGAL::Object segment_obj;
+			
+			CGAL::Object edge = blue_red_t.dual(it);
+			const Segment * s=CGAL::object_cast<Segment>(&edge);
+			if (s) { 
+				segment_obj = CGAL::intersection(*s,bounding_box); 
+			}
+			else {
+				const Ray * r=CGAL::object_cast<Ray>(&edge);
+				if (r) { 
+					segment_obj = CGAL::intersection(*r,bounding_box); 
+				}
+				else { 
+					const Line * l = CGAL::object_cast<Line>(&edge); 
+					segment_obj = CGAL::intersection( *l ,bounding_box); 
+				}
+			}
+			
+		      const Segment* segment=CGAL::object_cast<Segment>(&segment_obj);
+			
+			
+			//add it to the result set "edge_points"
+			if (segment) { 
+				Segment delaunay_segment = blue_red_t.segment(*it);
+				QColor color1 = getColor( delaunay_segment.point(0) );
+				QColor color2 = getColor( delaunay_segment.point(1) );
+				
+				if(color1 != color2) {
+					color1=Qt::black;
+				}
+				
+				source = segment -> source();
+				target = segment -> target();
+				
+				edge_points.push_back( Edge( (int) source.x(), (int) source.y(), (int) target.x(), (int) target.y(), color1) );
+			}
 		}
 		return edge_points;
 	}

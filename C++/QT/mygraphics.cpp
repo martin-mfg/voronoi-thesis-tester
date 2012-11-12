@@ -21,20 +21,22 @@ void MyGraphics::paintEvent(QPaintEvent* ) {
 		if (p.getColor(i) == Qt::red)
 			paint.setPen(QPen(Qt::red, 10));
 		else
-			paint.setPen(QPen(Qt::blue, 10));
+			paint.setPen(QPen(QColor(0,136,255), 10));
 		if (p.getY(i) > CB_Y + CB_HEIGHT)
 			paint.drawPoint(QPointF(p.getX(i),p.getY(i)));
 	}
 
-	vector <Point> edges = p.getEdges();
+	vector <Edge> edges = p.getEdges();
 	Point p1,p2;
-	paint.setPen(QPen(Qt::red, 3));
 	while(edges.size()){	//Draw all edges
-		p1=edges.back();edges.pop_back();p2=edges.back();
-		paint.drawLine((int)p1.x(),(int)p1.y(),(int)p2.x(),(int)p2.y());
+		Edge edge = edges.back();
 		edges.pop_back();
+		p1=Point(edge.x1, edge.y1);p2=Point(edge.x2, edge.y2);
+		paint.setPen(QPen(edge.color, 3));
+		paint.drawLine((int)p1.x(),(int)p1.y(),(int)p2.x(),(int)p2.y());
 	}
-	
+	paint.setPen(QPen(Qt::red, 3));
+
 	if (p.numPoints() > 0)	//The coordinate of the last point
 		sprintf(tmp, "(%d,%d)", p.getX(i-1), p.getY(i-1) );
 

@@ -31,7 +31,7 @@ class Points {
 		QColor gc[N_POINTS];//color of the point
 		int gi;	//Number of points
 
-		vector <Point> edges;	//Voronoi-edges
+		vector <Edge> edges;	//Voronoi-edges
 	public:
 		int numPoints(){	return gi;	}
 		int mode;
@@ -39,7 +39,7 @@ class Points {
 		Points () {gi=0;mode=0;current_color=0;}
 
 		/* GET FUNCTIONS */
-		vector <Point> getEdges(){	return edges;	}
+		vector <Edge> getEdges(){	return edges;	}
 
 		int getX(int i){	return gx[i];	}
 		int getY(int i){	return gy[i];	}
@@ -78,16 +78,23 @@ class Points {
 		
 		void getEdges(double bBoxParams[]){
 			vector <Point> red_points;
+			vector <Point> blue_points;
 
 			Problem prob;	//create a problem-object
 
 			Point tleft = Point(0, 0);
 			Point bright = Point(WIDTH, HEIGHT);
 		
-			for (int i=0;i<gi;i++)
-				red_points.push_back(Point(gx[i], gy[i]));
+			for (int i=0;i<gi;i++) {
+				if( getColor(i) == Qt::red ) {
+					red_points.push_back(Point(gx[i], gy[i]));
+				} else {
+					blue_points.push_back(Point(gx[i], gy[i]));
+				}
+			}
 
-			prob.set_red_points(red_points);//add all points to problem
+			prob.set_red_points(red_points);//add red points to problem
+			prob.set_blue_points(blue_points);//add blue points to problem
 			prob.set_bbox(tleft, bright);
 			prob.update();
 			edges = prob.get_voronoi_edges();
