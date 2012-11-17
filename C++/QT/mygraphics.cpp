@@ -26,6 +26,15 @@ void MyGraphics::paintEvent(QPaintEvent* ) {
 			paint.drawPoint(QPointF(geometry.getX(i),geometry.getY(i)));
 	}
 
+	vector <Circle> circs = geometry.getCircles(); 
+	double x,y,c;
+	while(circs.size()){
+		x = circs.back().center().x();
+		y = circs.back().center().y();
+		c = sqrt(circs.back().squared_radius());
+		paint.drawEllipse(x,y,c,c);
+		circs.pop_back();
+	}
 	QColor edgeColor;
 	const Segment * segment;
 	int numEdges = geometry.getNumEdges();

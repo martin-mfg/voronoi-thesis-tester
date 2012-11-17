@@ -1,5 +1,6 @@
 #include "basicDefinitions.h"
 #include "VoronoiDiagram.cpp"
+//#include "gurobi_c++.h"
 #include <fstream>
 
 #define N_POINTS 1000
@@ -14,6 +15,7 @@ class Geometry {
 		QColor gc[N_POINTS];//color of the point
 		int gi;	//Number of points
 		vector <ColoredEdge> edges;	//Voronoi-edges
+		vector <Circle> circles;	//Voronoi-edges
 		Rectangle bounding_box;
 
 		void shift(int i){
@@ -45,6 +47,25 @@ class Geometry {
 			voronoi.set_blue_points(blue_points);//add blue points to the diagram
 			voronoi.update();
 			edges = voronoi.get_voronoi_edges();
+		}
+
+		void calculateCircles() {
+			vector <Point> red_points;
+			vector <Point> blue_points;
+
+			VoronoiDiagram voronoi;	//create a VoronoiDiagram object
+			for (int i=0;i<gi;i++) {
+				if( getColor(i) == RED ) {
+					red_points.push_back(Point(gx[i], gy[i]));
+				} else {
+					blue_points.push_back(Point(gx[i], gy[i]));
+				}
+			}
+
+			voronoi.set_red_points(red_points);//add red points to the diagram
+			voronoi.set_blue_points(blue_points);//add blue points to the diagram
+			voronoi.update();
+			circles = voronoi.get_new_circles();
 		}
 
 		// crop returns NULL if the edge is completely outside the bounding box!
@@ -94,6 +115,16 @@ class Geometry {
 		int getX(int i){	return gx[i];	}
 		int getY(int i){	return gy[i];	}
 		QColor getColor(int i)	{	return gc[i];	}
+
+		vector <Circle> getCircles() {
+			if(gi >=3) {
+				calculateCircles();
+				return circles;
+			} else {
+				vector <Circle> v;
+				return v;
+			}
+		}
 
 		/* SET FUNCTION */
 		void addPoint(int x,int y){		//Add point
