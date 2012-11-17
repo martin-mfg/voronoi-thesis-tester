@@ -1,9 +1,12 @@
 #include "basicDefinitions.h"
 #include "VoronoiDiagram.cpp"
+#include <fstream>
 
 #define N_POINTS 1000
 // point "hitbox"
 #define HB	10
+
+using namespace std;
 
 class Geometry {
 	private:
@@ -122,5 +125,36 @@ class Geometry {
 		
 		calculateEdges();
 		}
+
+		void readFile(const char * filename){
+			std::ifstream inFile(filename);
+			double x,y,c;
+
+			clearPoints();		//clear all old points
+
+			if(!inFile) {
+				std::cerr << "Unable to open file datafile.txt";
+			} else {
+				while(!inFile.eof()) { 
+					inFile >> x >> y;
+					addPoint(x,y);
+				}
+			}
+		}
+		void saveFile(const char * filename){
+			std::ofstream outFile;
+			double x,y,c;
+
+			outFile.open(filename, ios::trunc);
+
+			if(!outFile) {
+				std::cerr << "Unable to open file datafile.txt";
+			} else {
+				for(int i=0;i<gi;i++) {
+					outFile << gx[i] << " " <<gy[i] << endl;
+				}
+			}
+		}
+
 
 };

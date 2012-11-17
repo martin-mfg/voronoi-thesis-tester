@@ -53,7 +53,10 @@ void MyGraphics::paintEvent(QPaintEvent* ) {
 	paint.drawText(CB_X+BT_X,CB_Y+BT_Y,"Clear");
 	paint.drawRect(EB_X,EB_Y,EB_WIDTH, EB_HEIGHT);
 	paint.drawText(EB_X+BT_X,EB_Y+BT_Y,"Quit");
-
+	paint.drawRect(OB_X,OB_Y,OB_WIDTH, OB_HEIGHT);
+	paint.drawText(OB_X+BT_X,OB_Y+BT_Y,"Open");
+	paint.drawRect(SB_X,SB_Y,SB_WIDTH, SB_HEIGHT);
+	paint.drawText(SB_X+BT_X,SB_Y+BT_Y,"Save");
 }
 
 void MyGraphics::keyPressEvent(QKeyEvent *event)
@@ -101,7 +104,27 @@ void MyGraphics::mousePressEvent (QMouseEvent* event){
 		else if (x > EB_X && x < EB_X+EB_WIDTH &&
 				y > EB_Y && y < EB_Y+EB_HEIGHT) //If Quit-button clicked
 			exit(0);
-		else
+		else if (x > OB_X && x < OB_X+OB_WIDTH &&
+				y > OB_Y && y < OB_Y+OB_HEIGHT) { //If Quit-button clicked
+			QString filename = QFileDialog::getOpenFileName(
+				this,
+				tr("Open Document"),
+				QDir::currentPath(),
+				tr("configurations (*.cnfg);;All files (*.*)"),
+				0,
+				QFileDialog::DontUseNativeDialog );
+			geometry.readFile(filename.toUtf8().constData());
+		} else if (x > SB_X && x < SB_X+SB_WIDTH &&
+				y > SB_Y && y < SB_Y+SB_HEIGHT) { //If Quit-button clicked
+			QString filename = QFileDialog::getOpenFileName(
+				this,
+				tr("Save Document"),
+				QDir::currentPath(),
+				tr("configurations (*.cnfg);;All files (*.*)"),
+				0,
+				QFileDialog::DontUseNativeDialog );
+			geometry.saveFile(filename.toUtf8().constData());
+		} else
 			geometry.addPoint(x,y);	//Add a new point
 
 		//TODO: Should be WIDHT and HEIGHT from main.cpp
