@@ -117,13 +117,8 @@ class Geometry {
 		QColor getColor(int i)	{	return gc[i];	}
 
 		vector <Circle> getCircles() {
-			if(gi >=3) {
-				calculateCircles();
-				return circles;
-			} else {
-				vector <Circle> v;
-				return v;
-			}
+			calculateCircles();
+			return circles;
 		}
 
 		/* SET FUNCTION */

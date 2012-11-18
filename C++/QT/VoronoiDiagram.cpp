@@ -4,6 +4,7 @@
 #include "ColoredEdge.cpp"
 
 using ::std::vector;
+using namespace std;
 
 class VoronoiDiagram{
 public:
@@ -99,12 +100,19 @@ public:
 					}
 				} else {
 					const Ray * r=CGAL::object_cast<Ray>( & (voronoi_edge) );
-					CGAL::Object intersection = CGAL::intersection( delaunay_segment, *r );
-					const Point * intersection_point = CGAL::object_cast<Point>(&intersection);
-					if( intersection_point ) {
-						center = intersection_point;
+					if(r) {
+						CGAL::Object intersection = CGAL::intersection( delaunay_segment, *r );
+						const Point * intersection_point = CGAL::object_cast<Point>(&intersection);
+						if( intersection_point ) {
+							center = intersection_point;
+						} else {
+							center = &( r->source() );
+						}
 					} else {
-						center = &( r->source() );
+						const Line * l=CGAL::object_cast<Line>( & (voronoi_edge) );
+						CGAL::Object intersection = CGAL::intersection( delaunay_segment, *l );
+						const Point * intersection_point = CGAL::object_cast<Point>(&intersection);
+						center = intersection_point;
 					}
 				}
 				

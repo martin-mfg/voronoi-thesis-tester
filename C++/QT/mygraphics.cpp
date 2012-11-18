@@ -16,8 +16,8 @@ void MyGraphics::paintEvent(QPaintEvent* ) {
 	char tmp[50];	//Used to print
 	strcpy (tmp, ""); 
 
-
-	for (i=0;i<geometry.numPoints();i++){		// Draw all points
+	//draw points
+	for (i=0;i<geometry.numPoints();i++){
 		if (geometry.getColor(i) == RED)
 			paint.setPen(QPen(RED, 10));
 		else
@@ -26,15 +26,19 @@ void MyGraphics::paintEvent(QPaintEvent* ) {
 			paint.drawPoint(QPointF(geometry.getX(i),geometry.getY(i)));
 	}
 
+	//draw circles
+	paint.setPen(QPen(RED, 1));
 	vector <Circle> circs = geometry.getCircles(); 
 	double x,y,c;
-	while(circs.size()){
+	while(circs.size()) {
 		x = circs.back().center().x();
 		y = circs.back().center().y();
 		c = sqrt(circs.back().squared_radius());
-		paint.drawEllipse(x,y,c,c);
+		paint.drawEllipse( x - c, y - c, 2 * c, 2 * c );
 		circs.pop_back();
 	}
+	
+	//draw edges
 	QColor edgeColor;
 	const Segment * segment;
 	int numEdges = geometry.getNumEdges();
@@ -48,14 +52,15 @@ void MyGraphics::paintEvent(QPaintEvent* ) {
 		paint.drawLine( (int)segment->source().x(), (int)segment->source().y(), (int)segment->target().x(), (int)segment->target().y() );
 	}
 	
+	//draw coordinates of the last point
 	paint.setPen(QPen(RED, 3));
-
-	if (geometry.numPoints() > 0)	//The coordinate of the last point
+	if (geometry.numPoints() > 0)
 		sprintf(tmp, "(%d,%d)", geometry.getX(i-1), geometry.getY(i-1) );
 
 	paint.setFont ( QFont ("Courier", 16));
 	paint.drawText(MESS_X, MESS_Y, tmp);
 
+	//draw the buttons
 	paint.setBrush(Qt::darkCyan);
 	paint.setPen(QPen(Qt::black,3));
 	paint.drawRect(CB_X,CB_Y,CB_WIDTH, CB_HEIGHT);
