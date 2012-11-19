@@ -2,47 +2,10 @@
 
 #include "gurobi_c++.h"
 using namespace std;
-
-int main(int   argc, char *argv[]) {
+vector <double> solve(vector <vector <double> > M) {
+vector <double> solution;
   try {	
     GRBEnv env = GRBEnv();
-	vector <vector <int> > M;
-	vector <int> p1;
-	vector <int> p2;
-	vector <int> p3;
-	vector <int> p4;
-	vector <int> p5;
-	vector <int> p6;
-	vector <int> p7;
-	p1.push_back(1);
-	p1.push_back(0);
-	p1.push_back(0);
-	p2.push_back(1);
-	p2.push_back(1);
-	p2.push_back(0);
-	p3.push_back(0);
-	p3.push_back(1);
-	p3.push_back(0);
-	p4.push_back(1);
-	p4.push_back(0);
-	p4.push_back(1);
-	p5.push_back(1);
-	p5.push_back(1);
-	p5.push_back(1);
-	p6.push_back(0);
-	p6.push_back(1);
-	p6.push_back(1);
-	p7.push_back(0);
-	p7.push_back(0);
-	p7.push_back(1);
-	M.push_back(p1);
-	M.push_back(p2);
-	M.push_back(p3);
-	M.push_back(p4);
-	M.push_back(p5);
-	M.push_back(p6);
-	M.push_back(p7);
-
 
 	int numPoints = M.size();
 	int numCircles = M.back().size();
@@ -84,8 +47,12 @@ int main(int   argc, char *argv[]) {
     // Optimize model
 
     model.optimize();
+
+
+
 for (int i=0;i<numPoints;i++){
-	cout << p[i].get(GRB_DoubleAttr_X) << endl;
+	solution.push_back((double)p[i].get(GRB_DoubleAttr_X));
+//	cout << p[i].get(GRB_DoubleAttr_X) << endl;
 }
 /*
     cout << x.get(GRB_StringAttr_VarName) << " "
@@ -95,7 +62,7 @@ for (int i=0;i<numPoints;i++){
     cout << z.get(GRB_StringAttr_VarName) << " "
          << z.get(GRB_DoubleAttr_X) << endl;
 */
-    cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
+//    cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
 
   } catch(GRBException e) {
     cout << "Error code = " << e.getErrorCode() << endl;
@@ -104,5 +71,5 @@ for (int i=0;i<numPoints;i++){
     cout << "Exception during optimization" << endl;
   }
 
-  return 0;
+  return solution;
 }
