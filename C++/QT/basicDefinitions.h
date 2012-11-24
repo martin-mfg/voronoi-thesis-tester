@@ -3,6 +3,8 @@
 #include <CGAL/enum.h>
 #include <CGAL/squared_distance_2.h>
 #include <CGAL/number_utils.h>
+#include <CGAL/Arr_circle_segment_traits_2.h>
+#include <CGAL/Arrangement_2.h>
 #include <QtGui>
 
 #define RED Qt::red
