@@ -6,6 +6,9 @@
 #include <CGAL/Arr_circle_segment_traits_2.h>
 #include <CGAL/Arrangement_2.h>
 #include <QtGui>
+#include "gurobi_c++.h"
+#include "solver/solver.h"
+
 
 #define RED Qt::red
 #define BLUE QColor(0,136,255)

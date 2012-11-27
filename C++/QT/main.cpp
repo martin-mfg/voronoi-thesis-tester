@@ -1,9 +1,8 @@
 #include <QtGui>
 #include "mygraphics.h"
-#include "gurobi_c++.h"
-#include "solver/solver.cpp"
-//#include "problem.h"
-#include "CircleArrangement.cpp"
+//#include "gurobi_c++.h"
+//#include "solver/solver.cpp"
+//#include "CircleArrangement.cpp"
 
 
 int main (int argc, char* argv[]){
@@ -58,13 +57,13 @@ double temp;
 //cout << sol.size() << endl;
 while (sol.size()){
 cout << sol.back() << endl;
-sol.pop_back();
+sol.pop_CircleArrangement carr;
+();
 }
-*/
 
 
-CircleArrangement carr;
-vector<Circle> myVector;
+
+backvector<Circle> myVector;
 
 myVector.push_back(Circle(Point(0,0), 5 ));
 myVector.push_back(Circle(Point(1,0), 5 ));
@@ -82,6 +81,6 @@ while(result.size()>0) {
 	cout << "\n";
 	result.pop_back();
 }
-
+*/
 return app.exec();
 }

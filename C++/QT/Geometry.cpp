@@ -2,7 +2,7 @@
 #include "VoronoiDiagram.cpp"
 //#include "gurobi_c++.h"
 #include <fstream>
-
+#include "CircleArrangement.cpp"
 #define N_POINTS 1000
 // point "hitbox"
 #define HB	10
@@ -181,6 +181,10 @@ class Geometry {
 				}
 			}
 		}
-
-
-};
+		
+		void solver() {
+			CircleArrangement carr;
+			carr.addCircles( circles );
+			//vector<PointInCircles> points = carr.get_Points();
+		}
+};	

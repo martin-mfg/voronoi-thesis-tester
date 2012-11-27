@@ -71,6 +71,8 @@ void MyGraphics::paintEvent(QPaintEvent* ) {
 	paint.drawText(OB_X+BT_X,OB_Y+BT_Y,"Open");
 	paint.drawRect(SB_X,SB_Y,SB_WIDTH, SB_HEIGHT);
 	paint.drawText(SB_X+BT_X,SB_Y+BT_Y,"Save");
+	paint.drawRect(SOB_X,SOB_Y,SOB_WIDTH, SOB_HEIGHT);
+	paint.drawText(SOB_X+BT_X,SOB_Y+BT_Y,"Solve");
 }
 
 void MyGraphics::keyPressEvent(QKeyEvent *event)
@@ -138,6 +140,9 @@ void MyGraphics::mousePressEvent (QMouseEvent* event){
 				0,
 				QFileDialog::DontUseNativeDialog );
 			geometry.saveFile(filename.toUtf8().constData());
+		} else if (x > SOB_X && x < SOB_X+SOB_WIDTH &&
+				y > SOB_Y && y < SOB_Y+SOB_HEIGHT) {
+			geometry.solver();
 		} else
 			geometry.addPoint(x,y);	//Add a new point
 

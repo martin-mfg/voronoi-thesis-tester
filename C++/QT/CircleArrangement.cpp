@@ -53,7 +53,17 @@ public:
 	}
 	
 	void addCircles( vector<Circle> new_circles ) {
-		insert( arrangement, new_circles.begin(), new_circles.end() );
+		cerr<<"before inserting\n";
+		//insert( arrangement, new_circles.begin(), new_circles.end() );
+		for(vector<Circle>::iterator cit = new_circles.begin(); cit != new_circles.end(); ++cit) {
+			cerr<<"x: "<< (cit->center()).x() <<"\n";			
+			cerr<<"y: "<< (cit->center()).y() <<"\n";			
+			cerr<<"r²: "<< cit->squared_radius() <<"\n\n";			
+			vector<Circle>::iterator cit2=cit;
+			++cit2;			
+			insert( arrangement, cit, cit2 );
+		}
+
 		circles.insert( circles.end(), new_circles.begin(), new_circles.end() );
 
 		//update leftmost, rightmost, topmost, bottommost

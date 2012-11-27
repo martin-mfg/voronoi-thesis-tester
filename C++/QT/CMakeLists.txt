@@ -21,8 +21,8 @@ if ( CGAL_FOUND )
   if(CGAL_Qt4_FOUND AND QT4_FOUND)
     SET( QT_USE_QT3SUPPORT TRUE )
     SET( QT_USE_QTXML TRUE )
-    qt4_automoc( main.cpp problem.cpp moc_mygraphics.cpp mygraphics.cpp mygraphics.h )
-    
+    qt4_automoc( main.cpp moc_mygraphics.cpp mygraphics.cpp mygraphics.h solver/solver.h )
+    #problem.cpp
     include_directories(AFTER ${CMAKE_CURRENT_BINARY_DIR})
     
     set (CGAL_CXX_FLAGS ${CGAL_CXX_FLAGS})
