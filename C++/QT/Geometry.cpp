@@ -185,6 +185,6 @@ class Geometry {
 		void solver() {
 			CircleArrangement carr;
 			carr.addCircles( circles );
-			//vector<PointInCircles> points = carr.get_Points();
+			vector<PointInCircles> points = carr.get_Points();
 		}
 };	

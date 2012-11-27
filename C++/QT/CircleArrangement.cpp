@@ -97,7 +97,9 @@ public:
 	vector<PointInCircles> get_Points() {
 		vector<PointInCircles> result = vector<PointInCircles>();
 		Circle_Arrangement_Type::Face_iterator fit;
+cerr<<"before outer for\n";
 		for( int face_index = 0 ; face_index < arrangement.number_of_faces() ; ++face_index ) {
+cerr<<"new round in the outer for\n";
 			Circle_Arrangement_Type temp_arrangement = Circle_Arrangement_Type( arrangement );
 			fit = temp_arrangement.faces_begin();
 			for( int i = 0; i < face_index; ++i ) {
@@ -105,7 +107,9 @@ public:
 			}
 			
 
+cerr<<"check whether face is unbounded\n";
 			if( fit->is_unbounded() == false ) { // ignore the outer face 
+cerr<<"face is bounded\n";
 				//calculate a Line going through the face
 				Circle_Arrangement_Type::Ccb_halfedge_circulator halfedge = fit->outer_ccb();
 				Point p1 = to_Point( halfedge->source()->point() );
@@ -114,17 +118,21 @@ public:
 				Line line = Line( p1, p2 );
 				line = line.perpendicular( middle );
 
+cerr<<"line calculated\n";
 				CGAL::Object intersection = CGAL::intersection( line, Rectangle( leftmost, bottommost, rightmost, topmost ) );
 				const Segment * line_segment = CGAL::object_cast<Segment>( &intersection );
 				Face_split_observer observer ( temp_arrangement, fit );
 				insert( temp_arrangement, CircleTrait_Segment( line_segment->source(), line_segment->target() ) );
+cerr<<"inserted segment\n";
 				
 				PointInCircles found_Point;
 				found_Point.point = get_middle_Point( to_Point( observer.halfedge->source()->point() ), to_Point( observer.halfedge->target()->point() ) );
 				found_Point.circles = vector<bool>();
 				
 				vector<Circle>::iterator cit;
+cerr<<"before inner for\n";
 				for( cit = circles.begin(); cit != circles.end(); ++cit ) {
+cerr<<"next round in inner for\n";
 					bool b = false;
 					if( cit->squared_radius() > CGAL::squared_distance( cit->center(), found_Point.point ) ) {
 						b = true;
