@@ -1,5 +1,7 @@
 #include "basicDefinitions.h"
 #include "PointInCircles.cpp"
+#include <CGAL/Arr_circle_segment_traits_2.h>
+
 
 typedef CGAL::Arr_circle_segment_traits_2<K> Circle_Traits;
 typedef CGAL::Arrangement_2<Circle_Traits> Circle_Arrangement_Type;
@@ -55,6 +57,7 @@ public:
 	void addCircles( vector<Circle> new_circles ) {
 		cerr<<"before inserting\n";
 		//insert( arrangement, new_circles.begin(), new_circles.end() );
+/*
 		for(vector<Circle>::iterator cit = new_circles.begin(); cit != new_circles.end(); ++cit) {
 			cerr<<"x: "<< (cit->center()).x() <<"\n";			
 			cerr<<"y: "<< (cit->center()).y() <<"\n";			
@@ -63,7 +66,14 @@ public:
 			++cit2;			
 			insert( arrangement, cit, cit2 );
 		}
-
+*/
+		vector<Circle> new_circles2 = new_circles;
+		while (new_circles2.size()){
+			insert ( arrangement, Circle_Traits::Curve_2(new_circles2.back()) );
+			new_circles2.pop_back();
+			cout << arrangement.number_of_vertices() << endl;
+		}
+		
 		circles.insert( circles.end(), new_circles.begin(), new_circles.end() );
 
 		//update leftmost, rightmost, topmost, bottommost
