@@ -132,7 +132,7 @@ void MyGraphics::mousePressEvent (QMouseEvent* event){
 			geometry.readFile(filename.toUtf8().constData());
 		} else if (x > SB_X && x < SB_X+SB_WIDTH &&
 				y > SB_Y && y < SB_Y+SB_HEIGHT) { //If Quit-button clicked
-			QString filename = QFileDialog::getOpenFileName(
+			QString filename = QFileDialog::getSaveFileName(
 				this,
 				tr("Save Document"),
 				QDir::currentPath(),
@@ -147,7 +147,7 @@ void MyGraphics::mousePressEvent (QMouseEvent* event){
 			geometry.addPoint(x,y);	//Add a new point
 
 		//TODO: Should be WIDHT and HEIGHT from main.cpp
-		double bbox[] ={-1000.0,1000.0,-1000.0,1000.0};
+//		double bbox[] ={-1000.0,1000.0,-1000.0,1000.0};
 		//geometry.getEdges(bbox);
 
 	} else

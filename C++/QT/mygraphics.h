@@ -2,8 +2,8 @@
 #include "Geometry.cpp"
 
 
-#define WIDTH 600
-#define HEIGHT 400
+#define WIDTH 6000
+#define HEIGHT 4000
 
 #define CB_X	0
 #define CB_Y	0

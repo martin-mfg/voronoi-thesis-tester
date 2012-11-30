@@ -1,12 +1,11 @@
 #include "basicDefinitions.h"
 #include "VoronoiDiagram.cpp"
-//#include "gurobi_c++.h"
 #include <fstream>
 #include "CircleArrangement.cpp"
-#define N_POINTS 1000
-// point "hitbox"
-#define HB	10
 
+// point "hitbox"
+#define HB	6
+#define N_POINTS 1000
 using namespace std;
 
 class Geometry {
@@ -125,7 +124,7 @@ class Geometry {
 		void addPoint(int x,int y){		//Add point
 			bool exists = false;
 			for(int i=0;i<gi;i++)	
-				if(x>=gx[i] && x <=gx[i]+HB && y>=gy[i] && y<=gy[i]+HB)
+				if(x>=gx[i]-4 && x <=gx[i]+HB && y>=gy[i]-4 && y<=gy[i]+HB)
 					exists=true;
 			if (!exists)		//If point doesn't allready exist, add
 				if (!current_color){
@@ -134,6 +133,16 @@ class Geometry {
 					gx[gi]=x;gy[gi]=y;gc[gi]=BLUE;gi++;
 				}
 			
+			calculateEdges();
+		}
+
+		void addColoredPoint(int x,int y,int c){		//Add point
+			bool exists = false;
+			for(int i=0;i<gi;i++)	
+				if(x>=gx[i] && x <=gx[i]+HB && y>=gy[i] && y<=gy[i]+HB)
+					exists=true;
+			if (!exists)		//If point doesn't allready exist, add
+					gx[gi]=x;gy[gi]=y;gc[gi]=c;gi++;
 			calculateEdges();
 		}
 	
@@ -183,8 +192,38 @@ class Geometry {
 		}
 		
 		void solver() {
-			CircleArrangement carr;
+			CircleArrangement carr;	
 			carr.addCircles( circles );
-//			vector<PointInCircles> points = carr.get_Points();
+			vector <vector <double> > M;
+
+			vector<PointInCircles> result = carr.get_Points();
+			vector<PointInCircles> result2 = result; /* I'm popping the first one, and need a backup */
+			while(result.size()>0) {
+				/* Print the problem gurobi is to solve */
+				PointInCircles p = result.back();
+				cout <<"x: "<< p.point.x() << "\n";
+				cout <<"y: "<< p.point.y() << "\n";
+				for(vector<bool>::iterator bit=p.circles.begin(); bit != p.circles.end(); ++bit)
+					cout << (*bit) << "\n";
+				cout << "\n";
+
+
+				/* Convert from bool vector to double vector */
+				vector <double>temp(result.back().circles.begin(),result.back().circles.end());
+				M.push_back(temp);
+				reverse(M.begin(), M.end());
+
+				result.pop_back();
+			}
+			vector <double> sol;
+			sol = solve(M);	/* let gurobi solve the problem */
+			while (sol.size()) {
+				if (sol.back() > 0) {		/* If gurobi suggests this point as a solution, add it */
+					addColoredPoint((int)result2.back().point.x(),(int)result2.back().point.y(), 1);
+					cout << "New point. x= " << (int)result2.back().point.x() << "   y= " << (int)result2.back().point.y()<< endl;
+				}
+				result2.pop_back();
+				sol.pop_back();
+			}
 		}
 };	
