@@ -1,0 +1,197 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{fullpage}
+\usepackage[british]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm} \newtheorem{theorem}{Theorem}
+\usepackage{color}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{subfig}
+\lstset{% parameters for all code listings
+	language=Python,
+	frame=single,
+	basicstyle=\small,  % nothing smaller than \footnotesize, please
+	tabsize=2,
+	numbers=left,
+	framexleftmargin=2em,  % extend frame to include line numbers
+	%xrightmargin=2em,  % extra space to fit 79 characters
+	breaklines=true,
+	breakatwhitespace=true,
+	prebreak={/},
+	captionpos=b,
+	columns=fullflexible,
+	escapeinside={\#*}{\^^M}
+}
+\usepackage{fancyvrb}
+\DefineVerbatimEnvironment{code}{Verbatim}{fontsize=\small}
+\DefineVerbatimEnvironment{example}{Verbatim}{fontsize=\small}
+
+\usepackage{tikz} \usetikzlibrary{trees}
+\usepackage{hyperref}  % should always be the last package
+
+% useful colours (use sparingly!):
+\newcommand{\blue}[1]{{\color{blue}#1}}
+\newcommand{\green}[1]{{\color{green}#1}}
+\newcommand{\red}[1]{{\color{red}#1}}
+
+% useful wrappers for algorithmic/Python notation:
+\newcommand{\length}[1]{\text{len}(#1)}
+\newcommand{\twodots}{\mathinner{\ldotp\ldotp}}  % taken from clrscode3e.sty
+\newcommand{\Oh}[1]{\mathcal{O}\left(#1\right)}
+
+% useful (wrappers for) math symbols:
+\newcommand{\Cardinality}[1]{\left\lvert#1\right\rvert}
+%\newcommand{\Cardinality}[1]{\##1}
+\newcommand{\Ceiling}[1]{\left\lceil#1\right\rceil}
+\newcommand{\Floor}[1]{\left\lfloor#1\right\rfloor}
+\newcommand{\Iff}{\Leftrightarrow}
+\newcommand{\Implies}{\Rightarrow}
+\newcommand{\Intersect}{\cap}
+\newcommand{\Sequence}[1]{\left[#1\right]}
+\newcommand{\Set}[1]{\left\{#1\right\}}
+\newcommand{\SetComp}[2]{\Set{#1\SuchThat#2}}
+\newcommand{\SuchThat}{\mid}
+\newcommand{\Tuple}[1]{\langle#1\rangle}
+\newcommand{\Union}{\cup}
+\usetikzlibrary{positioning,shapes,shadows,arrows}
+
+
+\title{\textbf{Separation of Voronoi Areas}}
+
+\author{Jonathan Sharyari, Martin, Sascha}  % replace by your name(s)
+
+%\date{Month Day, Year}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Abstract - do we need one?}
+I've layouted this from the outlines of a similar report, which required an abstract. I didn't see the point then, and I don't see the point now since we arn't writing a scientific report. But you guys probably know better than me, how this is usually done.
+
+
+\section{Introduction}
+What is a voronoi diagram?
+\begin{itemize}
+\item
+	picture
+\end{itemize}
+What is a triangulation?
+\begin{itemize}
+\item
+	picture
+\item
+	The relation to the voronoi diagram (duality)
+\item
+	another picture
+\end{itemize}
+
+What is an arrangement?
+\begin{itemize}
+\item
+	picture
+\end{itemize}
+
+Problem description?
+
+\begin{itemize}
+\item
+	Should it be here? 
+\end{itemize}
+\section{Background}
+The problem is NP-complete
+
+Bounds for solution
+\begin{itemize}
+\item
+	Picture showing the case where |blue| = |red| - 1
+\item
+	The problem is thought to always be solvable with |blue| = |red|, but this has not been shown. (Or am I wrong?)
+\item
+	Briefly mention upper bounds, referring to the paper we read. Not really relevant.
+\end{itemize}
+
+\section{Our solution}
+\begin{itemize}
+\item
+A graphical gui for input, with input of red dots either by manual placement or by reading a file
+\item
+Output by drawing delaunay circles and voronoi-edges.
+\item
+Calculating the arrangement, finding a point in every face and make gurobi solve the least number of points needed to cover each circle.
+If this didn't solve the problem, add more circles. We should mention how these new circles are chose (I'm not sure if I remember that part correctly even). We should also say something on why we believe this method will be able to find an optimal/near-optimal solution (I guess "Mr Rote said so" isn't really good enough. A paper maybe?)
+\end{itemize}
+\section{Tools}
+\begin{itemize}
+\item
+Git
+\item
+Qt
+\item
+Gurobi
+\item
+C++
+\item
+CGAL
+\item
+CMAKE
+\end{itemize}
+
+\section{Abstract program layout}
+How are the different parts of the program put together. Right now, we basically have a CGAL-part, a QT-part and a gurobi-part. Then we have one class, Geometry, that puts them all together. This is actually quite good.
+
+We also have the file myGraphics.cpp, which uses CGAL directly. We should probably avoid this, and use functions in Geometry.cpp instead.
+
+A picture showing file dependencies would be nice.
+
+\section{Problems encountered}
+\begin{itemize}
+\item
+Getting all the different parts (tools) to work and compile together. Especially cmake. Gurobi could also be mentioned, as it needs a C++ wrapper or whatever you call it.
+\item
+Finding a point inside a face. If we end up using the algorithm we have now, that algorithm would need a quite nice picture. And pictures are nice.
+\item
+Hopefully nothing more, but I don't think we will be that lucky :)
+\end{itemize}
+\section{Results}
+What did we manage to do. What didn't we manage to do. This is a little bit difficult to outline at this stage.
+
+\section{Result}
+\begin{itemize}
+\item
+A picture of the gui
+\item
+Some problems, and the resulting solution.
+\item
+How well does it perform?
+\end{itemize}
+
+\section{Discussion}
+Even more difficult at this stage
+
+
+\section{references}
+Keeping the references I used in the last project, since they probably follow a good convention.
+
+[1] H. G. Cobb, J. J. Grefenstette (1993)
+
+Genetic Algorithms for Tracking Changing Environments
+
+Proceedings of the 5th International Conference on Genetic Algorithms
+
+[2] A. Simões, E. Costa (2002)
+
+Using Genetic Algorithms to Deal with Dynamic Environments: A Comparative Study of Several Approaches Based on Promoting Diversity
+
+GECCO '02 Proceedings of the Genetic and Evolutionary Computation Conference
+
+[3] S. Yang (2007)
+
+Genetic Algorithms with Elitism-Based Immigrants for Changing Optimization Problems
+
+Lecture Notes In Computer Science, 2007, volume 4448, pages 627-636
+\end{document}
+
