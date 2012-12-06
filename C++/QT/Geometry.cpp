@@ -14,7 +14,7 @@ class Geometry {
 		QColor gc[N_POINTS];//color of the point
 		int gi;	//Number of points
 		vector <ColoredEdge> edges;	//Voronoi-edges
-		vector <Circle> circles;	//Voronoi-edges
+		vector <Circle> circles;	//the red circles that shall be covered
 		Rectangle bounding_box;
 
 		void shift(int i){
@@ -211,10 +211,11 @@ class Geometry {
 				/* Convert from bool vector to double vector */
 				vector <double>temp(result.back().circles.begin(),result.back().circles.end());
 				M.push_back(temp);
-				reverse(M.begin(), M.end());
 
 				result.pop_back();
 			}
+			reverse(M.begin(), M.end());
+			
 			vector <double> sol;
 			sol = solve(M);	/* let gurobi solve the problem */
 			while (sol.size()) {
