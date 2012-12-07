@@ -89,6 +89,28 @@ class Geometry {
 			const Segment * segment=CGAL::object_cast<Segment>(&segment_obj);
 			return segment;
 		}
+		
+		void update() {
+			calculateCircles();
+			calculateEdges();
+		}
+		
+		void remove_blue_points() {
+			vector<int> to_delete;
+			for(int i = 0; i<numPoints(); ++i) {
+				if( getColor(i) == BLUE ) {
+					to_delete.push_back( getX(i) );
+					to_delete.push_back( getY(i) );
+				}
+			}
+			int x,y;
+			for(vector<int>::iterator it=to_delete.begin(); it!=to_delete.end(); ++it) {
+				x=*it;
+				++it; // iterator "it" is incremented here!
+				y=*it;
+				remove( x, y );
+			}
+		}
 
 	public:
 		int current_color;
@@ -99,6 +121,9 @@ class Geometry {
 			mode=0;
 			current_color=0;
 			bounding_box = Rectangle( 0, 0, bbox_width, bbox_height );
+			
+			
+			rounds=10;
 		}
 
 		/* GET FUNCTIONS */
@@ -116,7 +141,7 @@ class Geometry {
 		QColor getColor(int i)	{	return gc[i];	}
 
 		vector <Circle> getCircles() {
-			calculateCircles();
+			//calculateCircles();
 			return circles;
 		}
 
@@ -133,23 +158,24 @@ class Geometry {
 					gx[gi]=x;gy[gi]=y;gc[gi]=BLUE;gi++;
 				}
 			
-			calculateEdges();
+			update();
 		}
 
-		void addColoredPoint(int x,int y,int c){		//Add point
+		void addColoredPoint(int x,int y,QColor c){		//Add point
 			bool exists = false;
 			for(int i=0;i<gi;i++)	
 				if(x>=gx[i] && x <=gx[i]+HB && y>=gy[i] && y<=gy[i]+HB)
 					exists=true;
 			if (!exists)		//If point doesn't allready exist, add
 					gx[gi]=x;gy[gi]=y;gc[gi]=c;gi++;
-			calculateEdges();
+			
+			update();
 		}
 	
 		void clearPoints() {	//"Remove" all points
 			gi=0;
 			
-			calculateEdges();
+			update();
 		}
 
 		// If point removed, shift the array one step
@@ -157,8 +183,8 @@ class Geometry {
 			for(int i=0;i<gi;i++)
 				if(x>=gx[i] && x <=gx[i]+HB && y>=gy[i] && y<=gy[i]+HB)
 					shift(i);
-		
-		calculateEdges();
+			
+			update();
 		}
 
 		void readFile(const char * filename){
@@ -191,40 +217,63 @@ class Geometry {
 			}
 		}
 		
+		
+		int rounds;
 		void solver() {
-			CircleArrangement carr;	
-			carr.addCircles( circles );
-			vector <vector <double> > M;
+			CircleArrangement carr;
 
-			vector<PointInCircles> result = carr.get_Points();
-			vector<PointInCircles> result2 = result; /* I'm popping the first one, and need a backup */
-			while(result.size()>0) {
-				/* Print the problem gurobi is to solve */
-				PointInCircles p = result.back();
-				cout <<"x: "<< p.point.x() << "\n";
-				cout <<"y: "<< p.point.y() << "\n";
-				for(vector<bool>::iterator bit=p.circles.begin(); bit != p.circles.end(); ++bit)
-					cout << (*bit) << "\n";
-				cout << "\n";
-
-
-				/* Convert from bool vector to double vector */
-				vector <double>temp(result.back().circles.begin(),result.back().circles.end());
-				M.push_back(temp);
-
-				result.pop_back();
-			}
-			reverse(M.begin(), M.end());
+			int myRounds=0;
 			
-			vector <double> sol;
-			sol = solve(M);	/* let gurobi solve the problem */
-			while (sol.size()) {
-				if (sol.back() > 0) {		/* If gurobi suggests this point as a solution, add it */
-					addColoredPoint((int)result2.back().point.x(),(int)result2.back().point.y(), 1);
-					cout << "New point. x= " << (int)result2.back().point.x() << "   y= " << (int)result2.back().point.y()<< endl;
+			while( circles.size() > 0 ) {
+				cout<<carr.getCircles()->size()<<" circles collected\n";
+				cout<<circles.size()<<" circles to be inserted\n";
+				cout<<numPoints()<<" points\n";
+				
+				//add circles,
+				//calculate candidate blue points
+				carr.addCircles( circles );
+				vector <vector <double> > coefficients_matrix;
+				vector<PointInCircles> result = carr.get_Points();
+				vector<PointInCircles> result2 = result; /* I'm popping the first one, and need a backup */
+				
+				//select blue points
+				while(result.size()>0) {
+					/* Print the problem gurobi is to solve */
+					PointInCircles p = result.back();
+					/*
+					cout <<"x: "<< p.point.x() << "\n";
+					cout <<"y: "<< p.point.y() << "\n";
+					for(vector<bool>::iterator bit=p.circles.begin(); bit != p.circles.end(); ++bit)
+						cout << (*bit) << "\n";
+					cout << "\n";
+					*/
+
+					/* Convert from bool vector to double vector */
+					vector <double> temp(result.back().circles.begin(),result.back().circles.end());
+					coefficients_matrix.push_back(temp);
+
+					result.pop_back();
 				}
-				result2.pop_back();
-				sol.pop_back();
+				reverse(coefficients_matrix.begin(), coefficients_matrix.end());
+				vector <double> sol;
+				sol = solve(coefficients_matrix);	/* let gurobi solve the problem */
+
+
+				//add the selected blue points, remove the old ones before
+				remove_blue_points();
+				while (sol.size()) {
+					if (sol.back() > 0) {		/* If gurobi suggests this point as a solution, add it */
+						addColoredPoint((int)result2.back().point.x(),(int)result2.back().point.y(), BLUE);
+						//cout << "New point. x= " << (int)result2.back().point.x() << "   y= " << (int)result2.back().point.y()<< endl;
+					}
+					result2.pop_back();
+					sol.pop_back();
+				}
+			
+			myRounds++;
+			if(myRounds==rounds)
+			{rounds+=5;break;}
+			
 			}
 		}
 };	

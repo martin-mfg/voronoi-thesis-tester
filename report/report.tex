@@ -60,7 +60,7 @@
 
 \title{\textbf{Separation of Voronoi Areas}}
 
-\author{Jonathan Sharyari, Martin, Sascha}  % replace by your name(s)
+\author{Jonathan Sharyari, Martin Gebert, Sascha Schreckenbach}  % replace by your name(s)
 
 %\date{Month Day, Year}
 \date{\today}
@@ -71,7 +71,7 @@
 
 \section{Abstract - do we need one?}
 I've layouted this from the outlines of a similar report, which required an abstract. I didn't see the point then, and I don't see the point now since we arn't writing a scientific report. But you guys probably know better than me, how this is usually done.
-
+I don't know know either how to write an report. I did only 1 small project by now which requiered a report. We didn't write an abstract then. I think we should ask Mr. Rote about the report, and I also asked a friend who already did his project whether he could send me his report. And I think an abstract would be nice.
 
 \section{Introduction}
 What is a voronoi diagram?
@@ -100,9 +100,11 @@ Problem description?
 \begin{itemize}
 \item
 	Should it be here? 
+	See above - we'll find out.
 \end{itemize}
 \section{Background}
 The problem is NP-complete
+Are you sure about that?
 
 Bounds for solution
 \begin{itemize}
@@ -110,8 +112,10 @@ Bounds for solution
 	Picture showing the case where |blue| = |red| - 1
 \item
 	The problem is thought to always be solvable with |blue| = |red|, but this has not been shown. (Or am I wrong?)
+	That's right, and as you mentioned, sometimes |blue| = |red| - 1 is enough.
 \item
 	Briefly mention upper bounds, referring to the paper we read. Not really relevant.
+	True, but I agree with you: we should mention the papers.
 \end{itemize}
 
 \section{Our solution}
@@ -120,9 +124,27 @@ Bounds for solution
 A graphical gui for input, with input of red dots either by manual placement or by reading a file
 \item
 Output by drawing delaunay circles and voronoi-edges.
+The Arrangement can also be saved to a file (saving the points is sufficient).
 \item
 Calculating the arrangement, finding a point in every face and make gurobi solve the least number of points needed to cover each circle.
-If this didn't solve the problem, add more circles. We should mention how these new circles are chose (I'm not sure if I remember that part correctly even). We should also say something on why we believe this method will be able to find an optimal/near-optimal solution (I guess "Mr Rote said so" isn't really good enough. A paper maybe?)
+If this didn't solve the problem, add more circles. We should mention how these new circles are chose (I'm not sure if I remember that part correctly even). 
+
+For every red edge, exactly one circle is chosen. We always choose the smallest circle that has it's center on the reg edge and the two red points (belonging to the edge) on its boundary.
+That's the definition of what we want to choose, the implementation is as follows:
+	for every red edge E {
+		find the red points P1, P2 belonging to the edges
+		find the segment S connecting P1 and P2
+		if S and E intersect, use the intersection as center
+		if they don't, check which end of E is closer to P1 (or P2) and use that end as center. (if E is an ray, there's only one end, so no need to check distances)
+		calculate the distance from the chosen center to P1 (or P2) and use it as radius
+		create a circle with the chosen center and the chosen radius
+		}
+For more details, you can also refer to the code in VoronoiDiagram.get_new_circles().
+
+We should also say something on why we believe this method will be able to find an optimal/near-optimal solution (I guess "Mr Rote said so" isn't really good enough. A paper maybe?)
+I guess by "optimal" you mean that our solution will use the smallest number of blue points possible? Well, that's what we use Gurobi for. 
+We know that every possible solution, no matter how good it is, will have to cover all the circles we calculated earlier.
+By using Gurobi, we find a set of points that covers all circles. And since we tell Gurobi to minimize the number of blue points (gurobi sees them only as variables) used, we can be sure to find an optimal solution, *if we find a solution at all*. If not, we have to repeat with more circles.
 \end{itemize}
 \section{Tools}
 \begin{itemize}
@@ -138,12 +160,16 @@ C++
 CGAL
 \item
 CMAKE
+\item
+GitHub
 \end{itemize}
 
 \section{Abstract program layout}
 How are the different parts of the program put together. Right now, we basically have a CGAL-part, a QT-part and a gurobi-part. Then we have one class, Geometry, that puts them all together. This is actually quite good.
 
 We also have the file myGraphics.cpp, which uses CGAL directly. We should probably avoid this, and use functions in Geometry.cpp instead.
+I didn't find where myGraphics uses CGAL directly. Do you mean that myGraphics calls functions of CGAL-Objects, like in "circs.back().squared_radius()" ?
+If so, I think you're theoretically right and we should avoid this in favor of a better structure, but I think it's not important enough to spend time doing this, and more important, changing this might decrease performance.
 
 A picture showing file dependencies would be nice.
 
