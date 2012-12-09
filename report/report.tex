@@ -60,7 +60,7 @@
 
 \title{\textbf{Separation of Voronoi Areas}}
 
-\author{Jonathan Sharyari, Martin Gebert, Sascha Schreckenbach}  % replace by your name(s)
+\author{Martin Gebert, Sascha Schreckenbach, Jonathan Sharyari}  % replace by your name(s)
 
 %\date{Month Day, Year}
 \date{\today}
@@ -74,51 +74,42 @@ I've layouted this from the outlines of a similar report, which required an abst
 I don't know know either how to write an report. I did only 1 small project by now which requiered a report. We didn't write an abstract then. I think we should ask Mr. Rote about the report, and I also asked a friend who already did his project whether he could send me his report. And I think an abstract would be nice.
 
 \section{Introduction}
-What is a voronoi diagram?
-\begin{itemize}
-\item
-	picture
-\end{itemize}
-What is a triangulation?
-\begin{itemize}
-\item
-	picture
-\item
-	The relation to the voronoi diagram (duality)
-\item
-	another picture
-\end{itemize}
+\subsection{Voronoi Diagram}
+Given a set of points in space, a voronoi diagram is a partitioning of the space into a set of voronoi regions or "cells". The voronoi region corresponding to a point \emph{p} corresponds to all points that are closer to \emph{p} that any other point in space.
 
-What is an arrangement?
-\begin{itemize}
-\item
-	picture
-\end{itemize}
+%\includegraphics[width=0.4\textwidth]{pictures/Delaunay-Triangulation1.png}
 
-Problem description?
+\subsection{Delaunay triangulation}
+A delaunay triangulation for a set of points in space is a triangulation of the points, with the added property that no point is inside the circumcircle of any triangle in the triangulation.
+\includegraphics[width=0.4\textwidth]{pictures/Delaunay_circumcircles.png}
 
-\begin{itemize}
-\item
-	Should it be here? 
-	See above - we'll find out.
-\end{itemize}
+The delaunay triangulation is dual to the voronoi diagram.
+
+%\includegraphics[width=0.3\textwidth]{pictures/Delaunay-Triangulation1.png}
+%\includegraphics[width=0.3\textwidth]{pictures/Delaunay-Triangulation2.png}
+%\includegraphics[width=0.3\textwidth]{pictures/Delaunay-Triangulation3.png}
+
+\subsection{Arrangement}
+Given a set of planar curves, the arrangement is the subdivision of the plane into zero-dimensional, one-dimensional and two-dimensional cells, called vertices, edges and faces, respectively induced by the given curves.[1 - direct citation]
+
+I don't know what more to say about them. A picture would really just look like any picture :P
+
+\section{Problem formulation}
+Given a set $\mathcal{R}$ of red points, find a set $\mathcal{B}$ of blue points such that in the voronoi diagram of $\mathcal{R} \cup \mathcal{B}$, no two regions corresponding to points in $\mathcal{R}$ are incident to each other. For the delaunay triangulation of $\mathcal{R} \cup \mathcal{B}$, this means that in the triangulation, there is no edge connecting two red points.
+
+
 \section{Background}
-The problem is NP-complete
-Are you sure about that?
+Although not yet shown, the problem is suspected to be NP-hard[2], as a similar problem has been proven to be NP-hard[3].
+\subsection{Upper and lower bounds}
+Given a set $\mathcal{R}$ of red points, with $|\mathcal{R}| = N$, it has been shown[2] that at least N-1 points are needed to solve this problem. This is exemplified in [REF TO BELOW PICTURE], and always apply to the special case when all points lie in row. In the general case, it has been shown that for $N>2$ there are cases where at least N blue dots are required to solve the problem.
 
-Bounds for solution
-\begin{itemize}
-\item
-	Picture showing the case where |blue| = |red| - 1
-\item
-	The problem is thought to always be solvable with |blue| = |red|, but this has not been shown. (Or am I wrong?)
-	That's right, and as you mentioned, sometimes |blue| = |red| - 1 is enough.
-\item
-	Briefly mention upper bounds, referring to the paper we read. Not really relevant.
-	True, but I agree with you: we should mention the papers.
-\end{itemize}
+\includegraphics[width=0.3\textwidth]{pictures/N-1solution.png}
+
+In the general case, it has been proved[2] that at most $3N/2$ blue points is needed to solve the problem, and in the case where the points in  $\mathcal{R}$ are in convex position, $5N/2$ points are sufficient. It has been conjectured that $N$ points are sufficient to solve the problem in the general case.
 
 \section{Our solution}
+The problem is thought to be NP-hard, while a similar problem has should to be NP-hard [reference barbarians]. Our solution is definitely exponential, since we are using integer programming.
+
 \begin{itemize}
 \item
 A graphical gui for input, with input of red dots either by manual placement or by reading a file
@@ -139,7 +130,7 @@ That's the definition of what we want to choose, the implementation is as follow
 		calculate the distance from the chosen center to P1 (or P2) and use it as radius
 		create a circle with the chosen center and the chosen radius
 		}
-For more details, you can also refer to the code in VoronoiDiagram.get_new_circles().
+For more details, you can also refer to the code in \texttt{VoronoiDiagram.get\_new\_circles() }.
 
 We should also say something on why we believe this method will be able to find an optimal/near-optimal solution (I guess "Mr Rote said so" isn't really good enough. A paper maybe?)
 I guess by "optimal" you mean that our solution will use the smallest number of blue points possible? Well, that's what we use Gurobi for. 
@@ -168,7 +159,7 @@ GitHub
 How are the different parts of the program put together. Right now, we basically have a CGAL-part, a QT-part and a gurobi-part. Then we have one class, Geometry, that puts them all together. This is actually quite good.
 
 We also have the file myGraphics.cpp, which uses CGAL directly. We should probably avoid this, and use functions in Geometry.cpp instead.
-I didn't find where myGraphics uses CGAL directly. Do you mean that myGraphics calls functions of CGAL-Objects, like in "circs.back().squared_radius()" ?
+I didn't find where myGraphics uses CGAL directly. Do you mean that myGraphics calls functions of CGAL-Objects, like in "circs.back().squared\_radius()" ?
 If so, I think you're theoretically right and we should avoid this in favor of a better structure, but I think it's not important enough to spend time doing this, and more important, changing this might decrease performance.
 
 A picture showing file dependencies would be nice.
@@ -219,5 +210,41 @@ GECCO '02 Proceedings of the Genetic and Evolutionary Computation Conference
 Genetic Algorithms with Elitism-Based Immigrants for Changing Optimization Problems
 
 Lecture Notes In Computer Science, 2007, volume 4448, pages 627-636
+
+-----------------------------------------
+
+[1]
+
+http://www.cgal.org/Manual/3.3/doc\_html/cgal\_manual/Arrangement\_2/Chapter\_main.html
+
+[2] O. Aichholzer, R. Fabila-Monroy, T. Hackl, M. van Kreveld, A. Pilz, P. Ramos, und B. Vogtenhuber
+
+Blocking Delaunay Triangulations. 
+
+Proc. Canadian Conference on Computational Geometry, CCCG 2010, Winnipeg, August 9­11, 2010. 
+
+% NP-hardness of a similar problem
+[3] M. de Berg, D. Gerrits, A. Khosravi, I. Rutter, C. Tsirogiannis and A. Wolff.
+
+How Alexander the Great Brought the Greeks Together while Inflicting Minimal Damage to the Barbarians.
+
+Proc. 26th European Workshop on Computational Geometry, pages 73–76, 2010.
+
+-----------------------------------------
+
+
+Delaunay circumcircles, GNU Free Documenation Licence, Nü es
+
+http://commons.wikimedia.org/wiki/File:Delaunay\_circumcircles.png
+
+
+Delaunay triangulation 1-3, public domain, user Capheiden 
+
+http://upload.wikimedia.org/wikipedia/de/1/17/Voronoi-Delaunay.svg
+
+http://upload.wikimedia.org/wikipedia/de/4/48/Voronoi-Diagramm.svg
+
+http://upload.wikimedia.org/wikipedia/commons/1/1f/Delaunay-Triangulation.svg
+
 \end{document}
 
