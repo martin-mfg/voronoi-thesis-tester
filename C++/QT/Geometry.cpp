@@ -93,6 +93,11 @@ class Geometry {
 		void update() {
 			calculateCircles();
 			calculateEdges();
+			
+			/*
+			vector<Circle>::iterator end = allCircles.end();
+			allCircles.insert(end,circles.begin(),circles.end());
+			*/
 		}
 		
 		void remove_blue_points() {
@@ -123,7 +128,7 @@ class Geometry {
 			bounding_box = Rectangle( 0, 0, bbox_width, bbox_height );
 			
 			
-			rounds=10;
+			rounds=1;
 		}
 
 		/* GET FUNCTIONS */
@@ -144,6 +149,13 @@ class Geometry {
 			//calculateCircles();
 			return circles;
 		}
+
+		/*
+		vector<Circle> allCircles;
+		vector <Circle> getDrawCircles() {
+			return allCircles;
+		}
+		*/
 
 		/* SET FUNCTION */
 		void addPoint(int x,int y){		//Add point
@@ -217,12 +229,13 @@ class Geometry {
 			}
 		}
 		
-		
+		CircleArrangement carr;
 		int rounds;
 		void solver() {
-			CircleArrangement carr;
-
 			int myRounds=0;
+			//allCircles=vector<Circle>();
+			update();
+			//vector<Circle> allCircles_last;
 			
 			while( circles.size() > 0 ) {
 				cout<<carr.getCircles()->size()<<" circles collected\n";
@@ -258,13 +271,14 @@ class Geometry {
 				vector <double> sol;
 				sol = solve(coefficients_matrix);	/* let gurobi solve the problem */
 
+				//allCircles_last=allCircles;
 
 				//add the selected blue points, remove the old ones before
 				remove_blue_points();
 				while (sol.size()) {
 					if (sol.back() > 0) {		/* If gurobi suggests this point as a solution, add it */
 						addColoredPoint((int)result2.back().point.x(),(int)result2.back().point.y(), BLUE);
-						//cout << "New point. x= " << (int)result2.back().point.x() << "   y= " << (int)result2.back().point.y()<< endl;
+						cout << "New point. x= " << (int)result2.back().point.x() << "   y= " << (int)result2.back().point.y()<< endl;
 					}
 					result2.pop_back();
 					sol.pop_back();
@@ -272,8 +286,31 @@ class Geometry {
 			
 			myRounds++;
 			if(myRounds==rounds)
-			{rounds+=5;break;}
+			{rounds+=1;break;}
 			
+			break;
 			}
+			
+			/*
+			//check how many circles are covered by blue points
+			int x,y;
+			int covered=0;
+			for(vector<Circle>::iterator it=allCircles_last.begin(); it!=allCircles_last.end(); it++) {
+				for(int i = 0; i<numPoints(); ++i) {
+					if( getColor(i) == BLUE ) {
+						x= getX(i);
+						y= getY(i);
+						
+						if( CGAL::squared_distance( Point(x,y), it->center() ) / it->squared_radius() < 1.2 ) {
+							++covered;
+							break;
+						}
+						
+					}
+					
+				}
+			}
+			cout << allCircles_last.size()<<" circles, "<<covered<<" covered"<<endl;
+			*/
 		}
 };	

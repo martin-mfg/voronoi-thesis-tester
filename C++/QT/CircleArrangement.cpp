@@ -53,6 +53,43 @@ private:
 		return result;
 	}
 	
+	
+//the next 2 methods were copied from the cgal doc ( http://www.cgal.org/Manual/3.3/doc_html/cgal_manual/Arrangement_2_ref/Class_Arrangement_2.html#Cross_link_anchor_796 ):
+void print_ccb (Circle_Arrangement_Type::Ccb_halfedge_const_circulator circ) {
+Circle_Arrangement_Type::Ccb_halfedge_const_circulator curr = circ;
+std::cout << "(" << curr->source()->point() << ")";
+do {
+//Circle_Arrangement_Type::Halfedge_const_handle he = curr->handle();
+std::cout << " [" << curr->curve() << "] " << "(" << curr->target()->point() << ")";
+} while (++curr != circ);
+std::cout << std::endl;
+}
+
+void print_face (Circle_Arrangement_Type::Face_const_handle f) {
+// Print the outer boundary.
+if (f->is_unbounded())
+std::cout << "Unbounded face. " << std::endl;
+else {
+std::cout << "Outer boundary: ";
+print_ccb (f->outer_ccb());
+}
+
+// Print the boundary of each of the holes.
+Circle_Arrangement_Type::Hole_const_iterator hi;
+int index = 1;
+for (hi = f->holes_begin(); hi != f->holes_end(); ++hi, ++index) {
+std::cout << " Hole #" << index << ": ";
+print_ccb (*hi);
+}
+
+// Print the isolated vertices.
+Circle_Arrangement_Type::Isolated_vertex_const_iterator iv;
+for (iv = f->isolated_vertices_begin(), index = 1; iv != f->isolated_vertices_end(); ++iv, ++index) {
+std::cout << " Isolated vertex #" << index << ": " << "(" << iv->point() << ")" << std::endl;
+}
+}
+
+
 public:
 	CircleArrangement() {
 		leftmost = 0;
@@ -109,6 +146,7 @@ public:
 		vector<PointInCircles> result = vector<PointInCircles>();
 		Circle_Arrangement_Type::Face_iterator fit;
 		
+		cout << arrangement.number_of_faces()<<" faces incl. unbounded face"<<endl;
 		for( int face_index = 0 ; face_index < arrangement.number_of_faces() ; ++face_index ) {
 			Circle_Arrangement_Type temp_arrangement = Circle_Arrangement_Type( arrangement );
 			fit = temp_arrangement.faces_begin();

@@ -9,6 +9,7 @@ vector <double> solution;
 
 	int numPoints = M.size();
 	int numCircles = M.back().size();
+	//cout<<"solving for "<<numCircles<<" circles and "<<numPoints<<" points"<<endl;
 	GRBVar p[numPoints];
 	double coeff[numPoints];
         GRBModel model = GRBModel(env);
