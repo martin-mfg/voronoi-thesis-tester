@@ -194,7 +194,7 @@ public:
 				vector<CircleArr_Circle>::iterator cit;
 				for( cit = circles.begin(); cit != circles.end(); ++cit ) {
 					bool b = false;
-					if( cit->squared_radius() > CGAL::squared_distance( cit->center(), exact_found_point ) ) {
+					if( cit->squared_radius() > 1.01*CGAL::squared_distance( cit->center(), exact_found_point ) ) {
 						b = true;
 					}
 					found_Point.circles.push_back( b );

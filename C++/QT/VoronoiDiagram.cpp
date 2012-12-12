@@ -92,15 +92,13 @@ public:
 					if( intersection_point ) {
 						center = intersection_point;
 					} else {
-						Point p2 = Point( ( s->point(0).x() + s->point(1).x() ) / 2, ( s->point(0).y() + s->point(1).y() ) / 2 );
-						center = & p2;
-						/*
+
 						if( CGAL::compare_distance_to_point( delaunay_segment.point(0), s->point(0), s->point(1) ) == CGAL::SMALLER ) {
 							center = &( s->point(0) );
 						} else {
 							center = &( s->point(1) );
 						}
-						*/
+						
 					}
 				} else {
 					const Ray * r=CGAL::object_cast<Ray>( & (voronoi_edge) );
@@ -111,10 +109,10 @@ public:
 							center = intersection_point;
 						} else {
 							//TODO: choose bigger number for big, maybe dynamically according to WIDTH or HEIGHT
-							int big=1;
-							cout<<r->source()<<endl<<r->point(big)<<endl<<endl;
-							Point p=r->point(big);
-							center = &( p );
+				K::FT squared_radius = CGAL::squared_distance( r->point(50), delaunay_segment.point(0) );
+				Circle new_circle = Circle( r->point(50), squared_radius );
+				circles.push_back( new_circle );
+continue;
 						}
 					} else {
 						const Line * l=CGAL::object_cast<Line>( & (voronoi_edge) );
