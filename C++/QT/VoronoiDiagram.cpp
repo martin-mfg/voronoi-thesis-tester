@@ -92,13 +92,13 @@ public:
 					if( intersection_point ) {
 						center = intersection_point;
 					} else {
-
-						if( CGAL::compare_distance_to_point( delaunay_segment.point(0), s->point(0), s->point(1) ) == CGAL::SMALLER ) {
-							center = &( s->point(0) );
-						} else {
-							center = &( s->point(1) );
-						}
-						
+				// It seems that the problem was to use a const pointer
+				// to a temporary object. So this should work for both
+				Point p2 = Point( ( s->point(0).x() + s->point(1).x() ) / 2, ( s->point(0).y() + s->point(1).y() ) / 2 );
+				K::FT squared_radius = CGAL::squared_distance( p2, delaunay_segment.point(0) );
+				Circle new_circle = Circle( p2, squared_radius );
+				circles.push_back( new_circle );
+				continue;						
 					}
 				} else {
 					const Ray * r=CGAL::object_cast<Ray>( & (voronoi_edge) );
