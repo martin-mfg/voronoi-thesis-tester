@@ -145,28 +145,37 @@ public:
 		CircleArr_Line line;
 		vector<PointInCircles> result = vector<PointInCircles>();
 		Circle_Arrangement_Type::Face_iterator fit;
-		
-		cout << arrangement.number_of_faces()<<" faces incl. unbounded face"<<endl;
-		for( int face_index = 0 ; face_index < arrangement.number_of_faces() ; ++face_index ) {
-			Circle_Arrangement_Type temp_arrangement = Circle_Arrangement_Type( arrangement );
-			fit = temp_arrangement.faces_begin();
-			for( int i = 0; i < face_index; ++i ) {
-				++fit;
-			}
-			if( fit->is_unbounded() == false ) { // ignore the outer face 
+		CircleArr_Point exact_found_point;
+		CGAL::Object intersection;
+		Circle_Arrangement_Type::Ccb_halfedge_circulator original_halfedge;
+		vector<CircleArr_Circle>::iterator cit;
+		PointInCircles found_Point;
+		Circle_Arrangement_Type::Ccb_halfedge_circulator halfedge;
+		bool b;
+		Converter_to_normal conv;
+		cout << arrangement.number_of_faces() << " faces incl. unbounded face"<<endl;
+
+		Circle_Arrangement_Type temp_arrangement =
+			Circle_Arrangement_Type( arrangement );
+		fit = temp_arrangement.faces_begin();
+		for(int face_i=0; face_i<arrangement.number_of_faces(); face_i++ ) {
+			if (face_i > 0)
+				fit++;
+
+			if( !(fit->is_unbounded())) { // ignore the outer face 
 				//calculate a Line going through the face
-				Circle_Arrangement_Type::Ccb_halfedge_circulator halfedge = fit->outer_ccb();
-				
-				Circle_Arrangement_Type::Ccb_halfedge_circulator original_halfedge = halfedge;
+				halfedge = fit->outer_ccb();
+				original_halfedge = halfedge;
 				do {
 					p1 = to_Point( halfedge->source()->point() );
 					p2 = to_Point( halfedge->target()->point() );
-
-					++halfedge;
+					for (int i=0;i<1000;i++)
+						halfedge++;
 					if( halfedge == original_halfedge ) {
 						break;
 					}
-				} while( abs( p1.x()-p2.x() ) + abs( p1.y() - p2.y() ) < 0.0001 );
+				} while( abs(p1.x()-p2.x()) + abs(p1.y()-p2.y()) <0.00001 );
+
 				//if the face consits of only 1 point, skip it
 				if( halfedge == original_halfedge ) {
 					continue;
@@ -177,33 +186,32 @@ public:
 				line = line.perpendicular( middle );
 
 				//get the segment of the line that's inside the selected face
-				CGAL::Object intersection = CGAL::intersection( line, CircleArr_Rectangle( leftmost, bottommost, rightmost, topmost ) );
-				const CircleArr_Segment * line_segment = CGAL::object_cast<CircleArr_Segment>( &intersection );
+				intersection = CGAL::intersection(line, CircleArr_Rectangle
+					(leftmost, bottommost, rightmost, topmost ) );
+				const CircleArr_Segment *line_segment =
+					CGAL::object_cast<CircleArr_Segment>( &intersection );
 				Face_split_observer observer ( temp_arrangement, fit );
-				CircleTrait_Segment mySegment( line_segment->source(), line_segment->target() );
+				CircleTrait_Segment mySegment( 
+					line_segment->source(), line_segment->target() );
 				insert( temp_arrangement,mySegment  );
 
 				//calculate the middle point of that segment
-				CircleArr_Point exact_found_point = get_middle_Point( to_Point( observer.halfedge->source()->point() ), to_Point( observer.halfedge->target()->point() ) );
-				PointInCircles found_Point;
-				Converter_to_normal conv;
+				exact_found_point = get_middle_Point(
+					to_Point( observer.halfedge->source()->point() ),
+					to_Point( observer.halfedge->target()->point() ) );
 				found_Point.point = conv( exact_found_point );
 				found_Point.circles = vector<bool>();
 				
 				//check which circles it lies in
-				vector<CircleArr_Circle>::iterator cit;
 				for( cit = circles.begin(); cit != circles.end(); ++cit ) {
-					bool b = false;
-					if( cit->squared_radius() > 1.001*CGAL::squared_distance( cit->center(), exact_found_point ) ) {
-						b = true;
-					}
-					found_Point.circles.push_back( b );
+					found_Point.circles.push_back( cit->squared_radius() > 1.00001*
+						CGAL::squared_distance( cit->center(), exact_found_point ));
 				}
-				
 				result.push_back( found_Point );
 			}
-		
 		}
+		// A print so that we can compare time with gurobi.
+		cout << "Points found in all faces." << endl;
 	return result;
 	}
 	

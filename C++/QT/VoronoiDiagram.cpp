@@ -1,5 +1,4 @@
 #include "basicDefinitions.h"
-
 #include <iterator>
 #include "ColoredEdge.cpp"
 
@@ -109,8 +108,8 @@ public:
 							center = intersection_point;
 						} else {
 							//TODO: choose bigger number for big, maybe dynamically according to WIDTH or HEIGHT
-				K::FT squared_radius = CGAL::squared_distance( r->point(50), delaunay_segment.point(0) );
-				Circle new_circle = Circle( r->point(50), squared_radius );
+				K::FT squared_radius = CGAL::squared_distance( r->point(10), delaunay_segment.point(0) );
+				Circle new_circle = Circle( r->point(10), squared_radius );
 				circles.push_back( new_circle );
 continue;
 						}
