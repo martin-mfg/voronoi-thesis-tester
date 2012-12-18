@@ -7,7 +7,11 @@
 \usepackage{amsthm} \newtheorem{theorem}{Theorem}
 \usepackage{color}
 \usepackage{float}
+\usepackage{alltt}
 \usepackage{listings}
+%\usepackage{algorithm}
+\usepackage[noend]{algorithm2e}
+%\usepackage{algorithmicx}
 \usepackage{subfig}
 \lstset{% parameters for all code listings
 	language=Python,
@@ -24,6 +28,8 @@
 	columns=fullflexible,
 	escapeinside={\#*}{\^^M}
 }
+
+
 \usepackage{fancyvrb}
 \DefineVerbatimEnvironment{code}{Verbatim}{fontsize=\small}
 \DefineVerbatimEnvironment{example}{Verbatim}{fontsize=\small}
@@ -94,6 +100,13 @@ Given a set of planar curves, the arrangement is the subdivision of the plane in
 
 I don't know what more to say about them. A picture would really just look like any picture :P
 
+\subsection{The Set Cover Problem}
+Given a set $\mathcal A$ of sets of numbers, the set cover problem is the problem of finding a minimal subset $\mathcal B$of $\mathcal A$, so that the elements of the union of the sets in $\mathcal B$ is exactly those of the union of the whole of $\mathcal A$.
+
+\subsubsection{example}
+Let $\mathcal A$ =  \{\{1,2\}, \{2,3\}, \{2,5\}, \{3,5\}\}. The elements of the union of all sets of $\mathcal A$ is \{1,2,3,5\}. A subset $\mathcal B$ = \{\{1,2\}, \{2,3\}\} has a union \{1,2,3\} and does not cover the set $\mathcal A$. A subset $\mathcal B$ = \{\{1,2\}, \{2,3\}, \{2,5\}\} has a union \{1,2,3,5\} that covers $\mathcal A$, but it is not minimal. A minimal solution is $\mathcal B$ = \{\{1,2\}, \{3,5\}\}.
+
+The set cover problem is known to be NP-complete.[4]
 \section{Problem formulation}
 Given a set $\mathcal{R}$ of red points, find a set $\mathcal{B}$ of blue points such that in the voronoi diagram of $\mathcal{R} \cup \mathcal{B}$, no two regions corresponding to points in $\mathcal{R}$ are incident to each other. For the delaunay triangulation of $\mathcal{R} \cup \mathcal{B}$, this means that in the triangulation, there is no edge connecting two red points.
 
@@ -107,9 +120,62 @@ Given a set $\mathcal{R}$ of red points, with $|\mathcal{R}| = N$, it has been s
 
 In the general case, it has been proved[2] that at most $3N/2$ blue points is needed to solve the problem, and in the case where the points in  $\mathcal{R}$ are in convex position, $5N/2$ points are sufficient. It has been conjectured that $N$ points are sufficient to solve the problem in the general case.
 
-\section{Our solution}
-The problem is thought to be NP-hard, while a similar problem has should to be NP-hard [reference barbarians]. Our solution is definitely exponential, since we are using integer programming.
+\section{Tools}
+\begin{itemize}
+\item
+Git
+\item
+Qt
+\item
+Gurobi
+\item
+C++
+\item
+CGAL
+\item
+CMAKE
+\item
+GitHub
+\end{itemize}
 
+
+\section{Algorithm outline}
+\begin{enumerate}
+\item
+For the set $\mathcal P$ of points (both red and blue) find the delaunay triangulation.
+\item
+For each edge connecting two red points in the triangulation, find a circle (REFERENCE DOWN) with the two points on its perimeter and add these to the (possibly empty) set of circles $\mathcal C$.
+\item
+Calculate the arrangement $\mathcal A$ of the circles $\mathcal C$. (REFERENCE TO INTRODUCTION)
+\item
+Find a set of points $\mathcal P^*$, so that for every face in the arrangement $\mathcal A$, exactly one point is located in the interior. For every point $\rho  \in \mathcal P^*$ and every circle $\varsigma$ in $\mathcal C$, determine whether $\rho$ is in the interior of $\varsigma$.
+\item
+Find a minimum subset of $\mathcal P^*$, so that every circle in $\mathcal C$ is covered by at least one point.
+\item
+Calculate a triangulation for the set of points $\mathcal P^* \cup Red(\mathcal P )$, where  $Red(\mathcal P )$ denotes the set of red points in $\mathcal P$.
+\item
+If the triangulation contains edges connecting two red points, restart from (2) (MIGHT CHANGE).
+\end{enumerate}
+
+\subsection{Finding appropriate circles}
+Things to say: There is often several possibities. Explain how we clatex pseudocodehose them in different cases (As we are not done yet, this could change).
+
+\subsection{Finding a point in the interior of a face}
+Here we explain how we find a point. Probably needs a good picture. (As we are not done yet, this could change or be refined).
+
+\subsection{Finding a minimal subset of points}
+The problem of finding a minimal subset of a set of points $\mathcal P^*$, so that at least one point in $\mathcal P$ is in the interior of each circle in $\mathcal C$, is exactly that of the set covering problem. (SHOULD WE GIVE AN EXAMPLE, SHOWING THAT THEY LOOK ALIKE?). The problem is easily stated in terms of an integer programming problem, and can thus be solved relatively efficiently with an integer programming solver, such as Gurobi.
+\subsubsection{Pseudocode }
+For every point $\rho_i \in \mathcal P^*$, let $x(\rho_i)$ be a boolean, set to 1 if the point $\rho_i$ appears in a solution and 0 otherwise. Also, for every circle $\varsigma_j \in \mathcal C$, let $\varsigma_j (\rho_i)$ be 1 if point $\rho_i$ lies in the interior of $c_j$ and 0 otherwise.
+
+
+
+\begin{lstlisting}[mathescape]
+Minimize: $\sum\limits_{ \rho \in \mathcal P^*} x(\rho_{i}) \hspace{70pt} $
+Constraint: $\sum\limits_{ \rho \in \mathcal P^*} \varsigma_j(\rho_i) \geq 1 \hspace{40pt}$ for each $\varsigma \in \mathcal C$
+\end{lstlisting}
+
+\section{Just to remember}
 \begin{itemize}
 \item
 A graphical gui for input, with input of red dots either by manual placement or by reading a file
@@ -137,23 +203,7 @@ I guess by "optimal" you mean that our solution will use the smallest number of 
 We know that every possible solution, no matter how good it is, will have to cover all the circles we calculated earlier.
 By using Gurobi, we find a set of points that covers all circles. And since we tell Gurobi to minimize the number of blue points (gurobi sees them only as variables) used, we can be sure to find an optimal solution, *if we find a solution at all*. If not, we have to repeat with more circles.
 \end{itemize}
-\section{Tools}
-\begin{itemize}
-\item
-Git
-\item
-Qt
-\item
-Gurobi
-\item
-C++
-\item
-CGAL
-\item
-CMAKE
-\item
-GitHub
-\end{itemize}
+
 
 \section{Abstract program layout}
 How are the different parts of the program put together. Right now, we basically have a CGAL-part, a QT-part and a gurobi-part. Then we have one class, Geometry, that puts them all together. This is actually quite good.
@@ -229,6 +279,10 @@ Proc. Canadian Conference on Computational Geometry, CCCG 2010, Winnipeg, August
 How Alexander the Great Brought the Greeks Together while Inflicting Minimal Damage to the Barbarians.
 
 Proc. 26th European Workshop on Computational Geometry, pages 73–76, 2010.
+
+[4] Richard M. Karp
+Reducibility Among Combinatorial Problems.
+In: R. E. Miller, J. W. Thatcher (Hrsg.): Complexity of Computer Computations. Plenum Press, New York 1972, S. 85–103.
 
 -----------------------------------------
 
