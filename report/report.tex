@@ -83,7 +83,7 @@ I don't know know either how to write an report. I did only 1 small project by n
 \subsection{Voronoi Diagram}
 Given a set of points in space, a voronoi diagram is a partitioning of the space into a set of voronoi regions or "cells". The voronoi region corresponding to a point \emph{p} corresponds to all points that are closer to \emph{p} that any other point in space.
 
-%\includegraphics[width=0.4\textwidth]{pictures/Delaunay-Triangulation1.png}
+\includegraphics[width=0.4\textwidth]{pictures/Delaunay-Triangulation1.png}
 
 \subsection{Delaunay triangulation}
 A delaunay triangulation for a set of points in space is a triangulation of the points, with the added property that no point is inside the circumcircle of any triangle in the triangulation.
@@ -91,9 +91,9 @@ A delaunay triangulation for a set of points in space is a triangulation of the 
 
 The delaunay triangulation is dual to the voronoi diagram.
 
-%\includegraphics[width=0.3\textwidth]{pictures/Delaunay-Triangulation1.png}
-%\includegraphics[width=0.3\textwidth]{pictures/Delaunay-Triangulation2.png}
-%\includegraphics[width=0.3\textwidth]{pictures/Delaunay-Triangulation3.png}
+\includegraphics[width=0.3\textwidth]{pictures/Delaunay-Triangulation1.png}
+\includegraphics[width=0.3\textwidth]{pictures/Delaunay-Triangulation2.png}
+\includegraphics[width=0.3\textwidth]{pictures/Delaunay-Triangulation3.png}
 
 \subsection{Arrangement}
 Given a set of planar curves, the arrangement is the subdivision of the plane into zero-dimensional, one-dimensional and two-dimensional cells, called vertices, edges and faces, respectively induced by the given curves.[1 - direct citation]
@@ -148,24 +148,50 @@ For each edge connecting two red points in the triangulation, find a circle (REF
 \item
 Calculate the arrangement $\mathcal A$ of the circles $\mathcal C$. (REFERENCE TO INTRODUCTION)
 \item
-Find a set of points $\mathcal P^*$, so that for every face in the arrangement $\mathcal A$, exactly one point is located in the interior. For every point $\rho  \in \mathcal P^*$ and every circle $\varsigma$ in $\mathcal C$, determine whether $\rho$ is in the interior of $\varsigma$.
+Find a set of points $\mathcal P^*$, so that for every face in the arrangement $\mathcal A$, exactly one point is located in the interior. For every point $\rho  \in \mathcal P^*$ and every circle $\varsigma$ in $\mathcal C$, determine whether $\rho$ is in the interior of $\varsigma$. (REFERENCE DOWN)
 \item
-Find a minimum subset of $\mathcal P^*$, so that every circle in $\mathcal C$ is covered by at least one point.
+Find a minimum subset of $\mathcal P^*$, so that every circle in $\mathcal C$ is covered by at least one point.(REFERENCE DOWN)
 \item
 Calculate a triangulation for the set of points $\mathcal P^* \cup Red(\mathcal P )$, where  $Red(\mathcal P )$ denotes the set of red points in $\mathcal P$.
 \item
 If the triangulation contains edges connecting two red points, restart from (2) (MIGHT CHANGE).
 \end{enumerate}
 
-\subsection{Finding appropriate circles}
-Things to say: There is often several possibities. Explain how we clatex pseudocodehose them in different cases (As we are not done yet, this could change).
+\subsection{Finding circles corresponding to unsatisfied edges}
+
+Following the terminology used by the CGAL-project, a \emph{line} is a line unbounded on both sides, whereas an line that is bounded on one side is called a \emph{ray} and when bounded on both sides it is called a \emph{segment}. The approach for choosing circles depends on which type of voronoi edge is to be blocked. Given a voronoi edge, corresponding to the neighbouring points $p_1$ and $p_2$, there are the following cases:
+
+\begin{enumerate}
+\item
+For a \emph{line}, the smallest possible circle is chosen. This is the circle with its centre in the middle of $p_1$ and $p_2$, and a radius such that $p_1$ and $p_2$ are on its perimeter. A line only occurs in the voronoi diagram in the trivial case where all points lie in a straight line.
+\item
+For a \emph{ray}, if the point in the middle of $p_1$ and $p_2$ lies on the ray itself, the circle is chosen as for the line. If it is not however, a sufficiently large circle is chosen. Note that a ray in the voronoi diagram is always associated with two points on the convex hull (????????????), for which infinitely large circles exist with the points $p_1$ and $p_2$ on its perimeter.
+\item
+For a \emph{segment}, the circle with $p_1$ and $p_2$ on its perimeter, and its centre on the middle point of the segment is chosen.
+\end{enumerate}
 
 \subsection{Finding a point in the interior of a face}
-Here we explain how we find a point. Probably needs a good picture. (As we are not done yet, this could change or be refined).
+A relatively difficult task proved to be that of finding a point in the interior of an arbitrary face, given two point $p_1$ and $p_2$ known to be on the boundary of the face. The following algorithm was used.
+
+\includegraphics[width=0.4\textwidth]{pictures/PointInFace.png}
+\includegraphics[width=0.3\textwidth]{pictures/PointInFace2.png}
+
+\begin {itemize}
+\item
+Find the point $p_m$ in the middle of $p_1$ and $p_2$. If this point is inside the face, chose this point. (WE DON'T ACTUALLY DO THIS YET)
+\item
+Find the line $l$ going through $p_m$ and is perpendicular to the edge between $p_1$ and $p_2$.
+\item
+Find the segment $s$ that is the intersection of $l$ and the smallest rectangle large enough to contain all circles of the arrangement. This step is needed because a CGAL function needs an object of type segment as input. We describe this step here for the sake of completeness.
+\item
+Find the segment that is the intersection of the segment $s$ and the face itself.
+\item
+Any point except the endpoints of this segment are inside the face. The midpoint of the segment is chosen.
+\end{itemize}
 
 \subsection{Finding a minimal subset of points}
 The problem of finding a minimal subset of a set of points $\mathcal P^*$, so that at least one point in $\mathcal P$ is in the interior of each circle in $\mathcal C$, is exactly that of the set covering problem. (SHOULD WE GIVE AN EXAMPLE, SHOWING THAT THEY LOOK ALIKE?). The problem is easily stated in terms of an integer programming problem, and can thus be solved relatively efficiently with an integer programming solver, such as Gurobi.
-\subsubsection{Pseudocode }
+\subsubsection{Pseudo code }
 For every point $\rho_i \in \mathcal P^*$, let $x(\rho_i)$ be a boolean, set to 1 if the point $\rho_i$ appears in a solution and 0 otherwise. Also, for every circle $\varsigma_j \in \mathcal C$, let $\varsigma_j (\rho_i)$ be 1 if point $\rho_i$ lies in the interior of $c_j$ and 0 otherwise.
 
 
@@ -182,26 +208,7 @@ A graphical gui for input, with input of red dots either by manual placement or 
 \item
 Output by drawing delaunay circles and voronoi-edges.
 The Arrangement can also be saved to a file (saving the points is sufficient).
-\item
-Calculating the arrangement, finding a point in every face and make gurobi solve the least number of points needed to cover each circle.
-If this didn't solve the problem, add more circles. We should mention how these new circles are chose (I'm not sure if I remember that part correctly even). 
 
-For every red edge, exactly one circle is chosen. We always choose the smallest circle that has it's center on the reg edge and the two red points (belonging to the edge) on its boundary.
-That's the definition of what we want to choose, the implementation is as follows:
-	for every red edge E {
-		find the red points P1, P2 belonging to the edges
-		find the segment S connecting P1 and P2
-		if S and E intersect, use the intersection as center
-		if they don't, check which end of E is closer to P1 (or P2) and use that end as center. (if E is an ray, there's only one end, so no need to check distances)
-		calculate the distance from the chosen center to P1 (or P2) and use it as radius
-		create a circle with the chosen center and the chosen radius
-		}
-For more details, you can also refer to the code in \texttt{VoronoiDiagram.get\_new\_circles() }.
-
-We should also say something on why we believe this method will be able to find an optimal/near-optimal solution (I guess "Mr Rote said so" isn't really good enough. A paper maybe?)
-I guess by "optimal" you mean that our solution will use the smallest number of blue points possible? Well, that's what we use Gurobi for. 
-We know that every possible solution, no matter how good it is, will have to cover all the circles we calculated earlier.
-By using Gurobi, we find a set of points that covers all circles. And since we tell Gurobi to minimize the number of blue points (gurobi sees them only as variables) used, we can be sure to find an optimal solution, *if we find a solution at all*. If not, we have to repeat with more circles.
 \end{itemize}
 
 
