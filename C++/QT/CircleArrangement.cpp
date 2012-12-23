@@ -158,31 +158,25 @@ public:
 		Circle_Arrangement_Type temp_arrangement =
 			Circle_Arrangement_Type( arrangement );
 		fit = temp_arrangement.faces_begin();
+		int counter;
 		for(int face_i=0; face_i<arrangement.number_of_faces(); face_i++ ) {
 			if (face_i > 0)
 				fit++;
-
 			if( !(fit->is_unbounded())) { // ignore the outer face 
 				//calculate a Line going through the face
 				halfedge = fit->outer_ccb();
-				original_halfedge = halfedge;
-				do {
-					p1 = to_Point( halfedge->source()->point() );
-					p2 = to_Point( halfedge->target()->point() );
-					for (int i=0;i<1000;i++)
-						halfedge++;
-					if( halfedge == original_halfedge ) {
-						break;
-					}
-				} while( abs(p1.x()-p2.x()) + abs(p1.y()-p2.y()) <0.00001 );
+				p1 = to_Point( halfedge->source()->point() );
+				p2 = to_Point( halfedge->target()->point() );
+				halfedge++;
 
 				//if the face consits of only 1 point, skip it
-				if( halfedge == original_halfedge ) {
+				if( halfedge == original_halfedge ){
+					// All of a sudden, this never happens. I can't explain it
+					cout << "skipped" << endl;
 					continue;
 				}
-				
 				middle = get_middle_Point( p1, p2 );
-				line = CircleArr_Line( p1, p2 );
+/*				line = CircleArr_Line( p1, p2 );
 				line = line.perpendicular( middle );
 
 				//get the segment of the line that's inside the selected face
@@ -199,19 +193,21 @@ public:
 				exact_found_point = get_middle_Point(
 					to_Point( observer.halfedge->source()->point() ),
 					to_Point( observer.halfedge->target()->point() ) );
+*/
+				exact_found_point = middle;
 				found_Point.point = conv( exact_found_point );
 				found_Point.circles = vector<bool>();
 				
 				//check which circles it lies in
 				for( cit = circles.begin(); cit != circles.end(); ++cit ) {
-					found_Point.circles.push_back( cit->squared_radius() > 1.00001*
+					found_Point.circles.push_back( cit->squared_radius() > 1.005*
 						CGAL::squared_distance( cit->center(), exact_found_point ));
 				}
 				result.push_back( found_Point );
 			}
 		}
 		// A print so that we can compare time with gurobi.
-		cout << "Points found in all faces." << endl;
+		cout << "Points found in all faces: " << result.size() << endl;
 	return result;
 	}
 	

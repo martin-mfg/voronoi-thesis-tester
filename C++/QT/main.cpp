@@ -1,5 +1,6 @@
 #include <QtGui>
 #include "mygraphics.h"
+#include <time.h>
 //#include "gurobi_c++.h"
 //#include "solver/solver.cpp"
 //#include "CircleArrangement.cpp"
@@ -82,5 +83,6 @@ while(result.size()>0) {
 	result.pop_back();
 }
 */
+srand((unsigned)time(0));
 return app.exec();
 }

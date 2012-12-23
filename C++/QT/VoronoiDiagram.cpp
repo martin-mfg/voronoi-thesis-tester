@@ -1,6 +1,9 @@
 #include "basicDefinitions.h"
 #include <iterator>
 #include "ColoredEdge.cpp"
+#include <time.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 using ::std::vector;
 using namespace std;
@@ -10,7 +13,6 @@ public:
 	vector<Point> red_points;
 	vector<Point> blue_points;
 	Triangulation blue_red_t;
-
 	VoronoiDiagram (){
 	}
 
@@ -79,6 +81,7 @@ public:
 			QColor color1 = getColor( delaunay_segment.point(0) );
 			QColor color2 = getColor( delaunay_segment.point(1) );
 			
+			int random = rand();
 			//...if the corresponding voronoi edge is red...
 			if(color1 == RED && color2 == RED) {
 				const Point * center;
@@ -88,12 +91,17 @@ public:
 				if (s) { 
 					CGAL::Object intersection = CGAL::intersection( delaunay_segment, *s );
 					const Point * intersection_point = CGAL::object_cast<Point>(&intersection);
-					if( intersection_point ) {
+					if( intersection_point && false) {
 						center = intersection_point;
 					} else {
 				// It seems that the problem was to use a const pointer
 				// to a temporary object. So this should work for both
-				Point p2 = Point( ( s->point(0).x() + s->point(1).x() ) / 2, ( s->point(0).y() + s->point(1).y() ) / 2 );
+				random = rand();
+				Point p2;
+				if (random%2)			
+				p2 = Point( ( s->point(0).x() + s->point(1).x() ) / 2, ( s->point(0).y() + s->point(1).y() ) / 2 );
+				else
+				p2 = s->point(0);
 				K::FT squared_radius = CGAL::squared_distance( p2, delaunay_segment.point(0) );
 				Circle new_circle = Circle( p2, squared_radius );
 				circles.push_back( new_circle );
@@ -104,12 +112,14 @@ public:
 					if(r) {
 						CGAL::Object intersection = CGAL::intersection( delaunay_segment, *r );
 						const Point * intersection_point = CGAL::object_cast<Point>(&intersection);
-						if( intersection_point ) {
+						if( intersection_point && false) {
 							center = intersection_point;
 						} else {
 							//TODO: choose bigger number for big, maybe dynamically according to WIDTH or HEIGHT
-				K::FT squared_radius = CGAL::squared_distance( r->point(10), delaunay_segment.point(0) );
-				Circle new_circle = Circle( r->point(10), squared_radius );
+				random = rand() % 20;
+				K::FT squared_radius = CGAL::squared_distance( r->point(random), delaunay_segment.point(0) );
+				cout << "number used: " << random << endl;
+				Circle new_circle = Circle( r->point(random), squared_radius );
 				circles.push_back( new_circle );
 continue;
 						}
