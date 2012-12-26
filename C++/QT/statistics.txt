@@ -1,0 +1,50 @@
+ints/doubles: If the points were converted to int or not
+*<number>: Which number I multiply with in the circlearrangement function. As we can see, it seems to be a good idea yet (I don't know why though)
+solve1/solve2: with or without the alternative solver
+
+With ints, *1.005, solve1:
+6min 10s - 25000 faces
+4min 56s - 22300 faces
+12min 45s - 45000 faces
+14min 10s - 44000 faces (no solution)
+?? - 25000 faces
+
+With ints, *1.005, Solve2:
+2min 40s - 19000 faces
+15min - 35000 faces (no solution)
+3min	- 19000 faces
+
+With doubles, *1.005, solve1:
+~2min 20 sec (three times)
+2min 3 sec
+14min (no solution) ????
+3min 52sec 29000 faces
+??? 36000 faces
+3.5 min 22000 faces
+2min 10s 20000 faces
+2min 30s 21000 faces
+
+With doubles, *1.00005, solve1:
+1min 38s 18500 faces
+?? (no solution)
+??? 43000 faces (no solution)
+
+With doubles, *1.05, solve1:
+Too many points
+
+With doubles, *1.0005, solve1:
+6min	30000 faces
+9min 35000+faces (no solution)
+
+
+With doubles, *1.005, sovle2:
+12min 50s, 26000 faces
+(? long time) 28000 faces
+This seems to be slower
+
+With doubles, *1.005, solve1 and no randomness when chosing segment-circles:
+around 4min 30s three times in a row
+1min 30s
+7min
+Seems more stable
+

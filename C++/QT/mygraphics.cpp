@@ -55,7 +55,7 @@ void MyGraphics::paintEvent(QPaintEvent* ) {
 	//draw coordinates of the last point
 	paint.setPen(QPen(RED, 3));
 	if (geometry.numPoints() > 0)
-		sprintf(tmp, "(%d,%d)", geometry.getX(i-1), geometry.getY(i-1) );
+		sprintf(tmp, "(%d,%d)", (int)geometry.getX(i-1), (int)geometry.getY(i-1) );
 
 	paint.setFont ( QFont ("Courier", 16));
 	paint.drawText(MESS_X, MESS_Y, tmp);
@@ -142,7 +142,9 @@ void MyGraphics::mousePressEvent (QMouseEvent* event){
 			geometry.saveFile(filename.toUtf8().constData());
 		} else if (x > SOB_X && x < SOB_X+SOB_WIDTH &&
 				y > SOB_Y && y < SOB_Y+SOB_HEIGHT) {
-			geometry.solver();
+			while (geometry.solver())
+				repaint();//			geometry.solver();
+				exit(0); // Makes it easier to take time with: time ./gui_demo
 		} else
 			geometry.addPoint(x,y);	//Add a new point
 

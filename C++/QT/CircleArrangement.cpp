@@ -99,7 +99,7 @@ public:
 	}
 	
 	void addCircles( vector<Circle> new_circles_in ) {
-		vector<CircleArr_Circle> new_circles = make_circles_exact( new_circles_in );;
+		vector<CircleArr_Circle> new_circles = make_circles_exact( new_circles_in );
 		
 		vector<CircleArr_Circle> new_circles2 = new_circles;
 		while ( new_circles2.size() ) {
@@ -167,14 +167,7 @@ public:
 				halfedge = fit->outer_ccb();
 				p1 = to_Point( halfedge->source()->point() );
 				p2 = to_Point( halfedge->target()->point() );
-				halfedge++;
 
-				//if the face consits of only 1 point, skip it
-				if( halfedge == original_halfedge ){
-					// All of a sudden, this never happens. I can't explain it
-					cout << "skipped" << endl;
-					continue;
-				}
 				middle = get_middle_Point( p1, p2 );
 /*				line = CircleArr_Line( p1, p2 );
 				line = line.perpendicular( middle );

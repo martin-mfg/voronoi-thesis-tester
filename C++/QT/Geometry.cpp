@@ -10,7 +10,7 @@ using namespace std;
 
 class Geometry {
 	private:
-		int gx[N_POINTS], gy[N_POINTS];	//x- and y-coordinates
+		double gx[N_POINTS], gy[N_POINTS];	//x- and y-coordinates
 		QColor gc[N_POINTS];//color of the point
 		int gi;	//Number of points
 		vector <ColoredEdge> edges;	//Voronoi-edges
@@ -93,27 +93,16 @@ class Geometry {
 		void update() {
 			calculateCircles();
 			calculateEdges();
-			
-			/*
-			vector<Circle>::iterator end = allCircles.end();
-			allCircles.insert(end,circles.begin(),circles.end());
-			*/
 		}
 		
 		void remove_blue_points() {
-			vector<int> to_delete;
+			vector<double> to_delete;
 			for(int i = 0; i<numPoints(); ++i) {
 				if( getColor(i) == BLUE ) {
-					to_delete.push_back( getX(i) );
-					to_delete.push_back( getY(i) );
+					shift(i);
+					remove_blue_points();
+					break;
 				}
-			}
-			int x,y;
-			for(vector<int>::iterator it=to_delete.begin(); it!=to_delete.end(); ++it) {
-				x=*it;
-				++it; // iterator "it" is incremented here!
-				y=*it;
-				remove( x, y );
 			}
 		}
 
@@ -141,8 +130,8 @@ class Geometry {
 		}
 
 		int numPoints(){	return gi;	}
-		int getX(int i){	return gx[i];	}
-		int getY(int i){	return gy[i];	}
+		double getX(int i){	return gx[i];	}
+		double getY(int i){	return gy[i];	}
 		QColor getColor(int i)	{	return gc[i];	}
 
 		vector <Circle> getCircles() {
@@ -158,7 +147,7 @@ class Geometry {
 		*/
 
 		/* SET FUNCTION */
-		void addPoint(int x,int y){		//Add point
+		void addPoint(double x,double y){		//Add point
 			bool exists = false;
 			for(int i=0;i<gi;i++)	
 				if(x>=gx[i]-4 && x <=gx[i]+HB && y>=gy[i]-4 && y<=gy[i]+HB)
@@ -173,7 +162,7 @@ class Geometry {
 			update();
 		}
 
-		void addColoredPoint(int x,int y,QColor c){		//Add point
+		void addColoredPoint(double x,double y,QColor c){		//Add point
 			bool exists = false;
 			for(int i=0;i<gi;i++)	
 				if(x>=gx[i] && x <=gx[i]+HB && y>=gy[i] && y<=gy[i]+HB)
@@ -186,12 +175,18 @@ class Geometry {
 	
 		void clearPoints() {	//"Remove" all points
 			gi=0;
-			
+			edges.clear();
+			circles.clear();
 			update();
 		}
 
+		// Can remove a point directly, if the index is known
+		void remove(int i){
+			shift(i);
+
+		}
 		// If point removed, shift the array one step
-		void remove(int x, int y) {
+		void remove(double x, double y) {
 			for(int i=0;i<gi;i++)
 				if(x>=gx[i] && x <=gx[i]+HB && y>=gy[i] && y<=gy[i]+HB)
 					shift(i);
@@ -201,22 +196,31 @@ class Geometry {
 
 		void readFile(const char * filename){
 			std::ifstream inFile(filename);
-			double x,y,c;
-
-			clearPoints();		//clear all old points
+			int x,y,c;
 
 			if(!inFile) {
 				std::cerr << "Unable to open file datafile.txt";
 			} else {
+				clearPoints();		//clear all old points
 				while(!inFile.eof()) { 
-					inFile >> x >> y;
-					addPoint(x,y);
+					inFile >> x;
+					if (!inFile.eof())
+						inFile >> y;
+					else
+						break;
+					if (!inFile.eof())
+						inFile >> c;
+					else
+						break;					
+					if (c == 1)
+						addColoredPoint(x,y,RED);
+					else if (c==0)
+						addColoredPoint(x,y,BLUE);					
 				}
 			}
 		}
 		void saveFile(const char * filename){
 			std::ofstream outFile;
-			double x,y,c;
 
 			outFile.open(filename, ios::trunc);
 
@@ -224,14 +228,17 @@ class Geometry {
 				std::cerr << "Unable to open file datafile.txt";
 			} else {
 				for(int i=0;i<gi;i++) {
-					outFile << gx[i] << " " <<gy[i] << endl;
+					if (gc[i] == RED)
+						outFile << gx[i] << " " <<gy[i] << " 1" << endl;
+					else
+						outFile << gx[i] << " " <<gy[i] << " 0" << endl;
 				}
 			}
 		}
 		
 		CircleArrangement carr;
 		int rounds;
-		void solver() {
+		int solver() {
 			int myRounds=0;
 			//allCircles=vector<Circle>();
 			update();
@@ -253,13 +260,6 @@ class Geometry {
 				while(result.size()>0) {
 					/* Print the problem gurobi is to solve */
 					PointInCircles p = result.back();
-					/*
-					cout <<"x: "<< p.point.x() << "\n";
-					cout <<"y: "<< p.point.y() << "\n";
-					for(vector<bool>::iterator bit=p.circles.begin(); bit != p.circles.end(); ++bit)
-						cout << (*bit) << "\n";
-					cout << "\n";
-					*/
 
 					/* Convert from bool vector to double vector */
 					vector <double> temp(result.back().circles.begin(),result.back().circles.end());
@@ -277,8 +277,8 @@ class Geometry {
 				remove_blue_points();
 				while (sol.size()) {
 					if (sol.back() > 0) {		/* If gurobi suggests this point as a solution, add it */
-						addColoredPoint((int)result2.back().point.x(),(int)result2.back().point.y(), BLUE);
-						cout << "New point. x= " << (int)result2.back().point.x() << "   y= " << (int)result2.back().point.y()<< endl;
+						addColoredPoint(result2.back().point.x(),result2.back().point.y(), BLUE);
+						cout << "New point. x= " << result2.back().point.x() << "   y= " << result2.back().point.y()<< endl;
 					}
 					result2.pop_back();
 					sol.pop_back();
@@ -290,27 +290,6 @@ class Geometry {
 			
 			break;
 			}
-			
-			/*
-			//check how many circles are covered by blue points
-			int x,y;
-			int covered=0;
-			for(vector<Circle>::iterator it=allCircles_last.begin(); it!=allCircles_last.end(); it++) {
-				for(int i = 0; i<numPoints(); ++i) {
-					if( getColor(i) == BLUE ) {
-						x= getX(i);
-						y= getY(i);
-						
-						if( CGAL::squared_distance( Point(x,y), it->center() ) / it->squared_radius() < 1.2 ) {
-							++covered;
-							break;
-						}
-						
-					}
-					
-				}
-			}
-			cout << allCircles_last.size()<<" circles, "<<covered<<" covered"<<endl;
-			*/
+			return circles.size();
 		}
 };	
