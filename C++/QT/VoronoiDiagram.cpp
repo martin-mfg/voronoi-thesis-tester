@@ -27,6 +27,8 @@ public:
 	vector<Point> get_blue_points(){	return blue_points; }	
 	
 	void create_triangulations(){
+		Triangulation brt;
+		blue_red_t = brt;
 		blue_red_t.insert(red_points.begin(), red_points.end());
 		blue_red_t.insert(blue_points.begin(), blue_points.end());
 	}
@@ -69,7 +71,37 @@ public:
 		}
 		return edges;
 	}
+
+	double objF() {
+		Triangulation::Finite_edges_iterator it;
+		vector <Circle> circles;
+		K::FT squared_radius;
+		Point source, target, delaunay_source, delaunay_target;
+		double w = 0;
+		// iterate over all delaunay-edges...
+		for (it = blue_red_t.finite_edges_begin(); it != blue_red_t.finite_edges_end(); it++) {
+			CGAL::Object voronoi_edge = blue_red_t.dual(it);
+			Segment delaunay_segment = blue_red_t.segment(*it);
+			QColor color1 = getColor( delaunay_segment.point(0) );
+			QColor color2 = getColor( delaunay_segment.point(1) );
+			//...if the corresponding voronoi edge is red...
+			if(color1 == RED && color2 == RED) {
+				const Segment * s=CGAL::object_cast<Segment>( & (voronoi_edge) );
+				const Ray * r=CGAL::object_cast<Ray>( & (voronoi_edge) );
+
+				if (s) { 
+					w = w+s->squared_length();
+				} else if(r) {
+					w=10000;
+				}	else {
+					w=-1;
+				}
+			}
+		}
+		return w;
+	}
 	
+
 	vector <Circle> get_new_circles() {
 		Triangulation::Finite_edges_iterator it;
 		vector <Circle> circles;

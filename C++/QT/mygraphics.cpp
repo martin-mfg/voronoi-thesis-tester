@@ -144,7 +144,8 @@ void MyGraphics::mousePressEvent (QMouseEvent* event){
 				y > SOB_Y && y < SOB_Y+SOB_HEIGHT) {
 			while (geometry.solver())
 				repaint();//			geometry.solver();
-				exit(0); // Makes it easier to take time with: time ./gui_demo
+				repaint();				
+				//exit(0); // Makes it easier to take time with: time ./gui_demo
 		} else
 			geometry.addPoint(x,y);	//Add a new point
 

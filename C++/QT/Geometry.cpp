@@ -32,7 +32,6 @@ class Geometry {
 			vector <Point> red_points;
 			vector <Point> blue_points;
 
-			VoronoiDiagram voronoi;	//create a VoronoiDiagram object
 
 			for (int i=0;i<gi;i++) {
 				if( getColor(i) == RED ) {
@@ -109,6 +108,7 @@ class Geometry {
 	public:
 		int current_color;
 		int mode;
+			VoronoiDiagram voronoi;	//create a VoronoiDiagram object
 
 		Geometry (int bbox_width, int bbox_height) {
 			gi=0;
@@ -235,7 +235,55 @@ class Geometry {
 				}
 			}
 		}
-		
+	
+		double fRand(double fMin, double fMax) {
+		   double f = (double)rand() / RAND_MAX;
+   		return fMin + f * (fMax - fMin);
+		}
+
+		int genetics(){
+		double initial = voronoi.objF();
+		if (initial == 0){
+			cout << "Solution found!" << endl;
+			return 0;
+		}
+		vector <Point> reds;
+		vector <Point> blues;
+		VoronoiDiagram v[10];
+		for (int i=0;i<10;i++){
+			for (int j=0;j<gi;j++)	{		
+				if (gc[j] == RED)
+					reds.push_back(Point(gx[j],gy[j]));
+				else
+					blues.push_back(Point(fRand(-1.,1.)+gx[j],fRand(-1.,1)+gy[j]));
+			}
+			v[i].set_red_points(reds);
+			v[i].set_blue_points(blues);
+			v[i].update();
+			if (v[i].objF() < initial){
+			cout << v[i].objF() << endl;
+
+				for (int k=gi-1;k!=0;k--){
+					if (gc[k]==RED){
+						reds.pop_back();
+						continue;
+					} else {
+					gx[k]=blues.back().x();
+					gy[k]=blues.back().y();
+					blues.pop_back();
+					}
+				}
+				voronoi = v[i];
+				break;
+			}
+			reds.clear();
+			blues.clear();
+		}
+			genetics();
+shit:
+			return 0;
+		}
+
 		CircleArrangement carr;
 		int rounds;
 		int solver() {
@@ -284,12 +332,15 @@ class Geometry {
 					sol.pop_back();
 				}
 			
-			myRounds++;
-			if(myRounds==rounds)
-			{rounds+=1;break;}
-			
+			if (voronoi.objF() < 1000 && voronoi.objF() > 0){
+				cout << "We start with obj. function: " << voronoi.objF() << endl<< endl<< endl<< endl<< endl<< endl;
+
+				genetics();
+				update();
+			} else 
+				cout << "No genetics, obj function was: " << voronoi.objF() << endl;
 			break;
 			}
-			return circles.size();
+			return voronoi.objF();
 		}
 };	
