@@ -115,9 +115,22 @@ class Geometry {
 			mode=0;
 			current_color=0;
 			bounding_box = Rectangle( 0, 0, bbox_width, bbox_height );
-			
-			
-			rounds=1;
+		}
+
+		//This function returns true if the number of blue points equal
+		//the number of red points
+		bool redEqualBlue(){
+			int counter;
+			for (int i=0;i<gi;i++){
+				if (gc[i] == BLUE)
+					counter++;
+				else
+					counter--;
+			}
+			if (counter)
+				return false;
+			else
+				return true;
 		}
 
 		/* GET FUNCTIONS */
@@ -241,28 +254,31 @@ class Geometry {
    		return fMin + f * (fMax - fMin);
 		}
 
-		int genetics(){
-		double initial = voronoi.objF();
-		if (initial == 0){
-			cout << "Solution found!" << endl;
-			return 0;
-		}
+		//v==0 means no print
+		double genetics(int verbose){
+		double minimum = voronoi.objF();
 		vector <Point> reds;
 		vector <Point> blues;
-		VoronoiDiagram v[10];
-		for (int i=0;i<10;i++){
+		VoronoiDiagram v;
+		double temp=0;
+		while (minimum){
+			if (minimum == 0){
+//				cout << "Solution found!" << endl;
+				return 0;
+			}
 			for (int j=0;j<gi;j++)	{		
 				if (gc[j] == RED)
 					reds.push_back(Point(gx[j],gy[j]));
+				else if (rand()%2)
+					blues.push_back(Point(fRand(-1.5,1.5)+gx[j],fRand(-1.5,1.5)+gy[j]));
 				else
-					blues.push_back(Point(fRand(-1.,1.)+gx[j],fRand(-1.,1)+gy[j]));
+					blues.push_back(Point(gx[j],gy[j]));
 			}
-			v[i].set_red_points(reds);
-			v[i].set_blue_points(blues);
-			v[i].update();
-			if (v[i].objF() < initial){
-			cout << v[i].objF() << endl;
-
+			v.set_red_points(reds);
+			v.set_blue_points(blues);
+			v.update();
+			temp = v.objF();
+			if (temp < minimum){
 				for (int k=gi-1;k!=0;k--){
 					if (gc[k]==RED){
 						reds.pop_back();
@@ -273,72 +289,54 @@ class Geometry {
 					blues.pop_back();
 					}
 				}
-				voronoi = v[i];
+				voronoi = v;
+				minimum = temp;	
+				update();		
+				if (verbose)
+					cout << minimum << endl;
 				break;
 			}
 			reds.clear();
 			blues.clear();
 		}
-			genetics();
-shit:
-			return 0;
+			return minimum;
 		}
 
 		CircleArrangement carr;
-		int rounds;
-		int solver() {
-			int myRounds=0;
-			//allCircles=vector<Circle>();
+		int solver(int verbose) {
 			update();
-			//vector<Circle> allCircles_last;
-			
+			vector<PointInCircles>::iterator it;
 			while( circles.size() > 0 ) {
-				cout<<carr.getCircles()->size()<<" circles collected\n";
-				cout<<circles.size()<<" circles to be inserted\n";
-				cout<<numPoints()<<" points\n";
-				
 				//add circles,
 				//calculate candidate blue points
 				carr.addCircles( circles );
 				vector <vector <double> > coefficients_matrix;
 				vector<PointInCircles> result = carr.get_Points();
-				vector<PointInCircles> result2 = result; /* I'm popping the first one, and need a backup */
 				
 				//select blue points
-				while(result.size()>0) {
-					/* Print the problem gurobi is to solve */
-					PointInCircles p = result.back();
-
+				for (it=result.begin();it != result.end();it++){
 					/* Convert from bool vector to double vector */
-					vector <double> temp(result.back().circles.begin(),result.back().circles.end());
+					vector <double> temp(it->circles.begin(),it->circles.end());
 					coefficients_matrix.push_back(temp);
 
-					result.pop_back();
+//					result.pop_back();
 				}
-				reverse(coefficients_matrix.begin(), coefficients_matrix.end());
 				vector <double> sol;
-				sol = solve(coefficients_matrix);	/* let gurobi solve the problem */
-
-				//allCircles_last=allCircles;
+				sol = solve(verbose,coefficients_matrix);	/* Gurobi solver */
 
 				//add the selected blue points, remove the old ones before
 				remove_blue_points();
 				while (sol.size()) {
-					if (sol.back() > 0) {		/* If gurobi suggests this point as a solution, add it */
-						addColoredPoint(result2.back().point.x(),result2.back().point.y(), BLUE);
-						cout << "New point. x= " << result2.back().point.x() << "   y= " << result2.back().point.y()<< endl;
+					if (sol.back() > 0) {		/* add new points */
+						addColoredPoint(result.back().point.x(),
+							result.back().point.y(), BLUE);
+					if (verbose)
+						cout << "New point. x= " << result.back().point.x() 
+							<< "   y= " << result.back().point.y()<< endl;
 					}
-					result2.pop_back();
+					result.pop_back();
 					sol.pop_back();
 				}
-			
-			if (voronoi.objF() < 1000 && voronoi.objF() > 0){
-				cout << "We start with obj. function: " << voronoi.objF() << endl<< endl<< endl<< endl<< endl<< endl;
-
-				genetics();
-				update();
-			} else 
-				cout << "No genetics, obj function was: " << voronoi.objF() << endl;
 			break;
 			}
 			return voronoi.objF();

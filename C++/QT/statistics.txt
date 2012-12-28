@@ -48,3 +48,12 @@ around 4min 30s three times in a row
 7min
 Seems more stable
 
+---
+
+With doubles, *1.005, solve1 and randomized search:
+8.172s
+16.193s
+5.889s
+10.055s
+5.782s
+

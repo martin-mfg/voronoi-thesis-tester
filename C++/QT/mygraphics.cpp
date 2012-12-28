@@ -3,7 +3,21 @@
 #include "mygraphics.h"
 #include "basicDefinitions.h"
 
-MyGraphics::MyGraphics (QWidget* obj) :	QWidget(obj), geometry(WIDTH,HEIGHT) {
+MyGraphics::MyGraphics (char * argv,QWidget* obj) :	QWidget(obj), geometry(WIDTH,HEIGHT) {
+	if (argv){
+		geometry.readFile(argv);
+			double obj=-1;
+			while (obj){
+				if (obj/geometry.numPoints() < 300 && obj > 0 &&
+					geometry.redEqualBlue()){
+					obj=geometry.genetics(0);
+					update();
+				} else {
+					obj=geometry.solver(0);
+				}
+			}
+			exit(0); // Makes it easier to take time with: time ./gui_demo
+	}
 }
 
 
@@ -49,7 +63,7 @@ void MyGraphics::paintEvent(QPaintEvent* ) {
 		}
 		
 		paint.setPen(QPen(edgeColor, 3));
-		paint.drawLine( (int)segment->source().x(), (int)segment->source().y(), (int)segment->target().x(), (int)segment->target().y() );
+		paint.drawLine( (int)segment->source().x(), (int)segment->source().y(), 			(int)segment->target().x(), (int)segment->target().y() );
 	}
 	
 	//draw coordinates of the last point
@@ -142,17 +156,27 @@ void MyGraphics::mousePressEvent (QMouseEvent* event){
 			geometry.saveFile(filename.toUtf8().constData());
 		} else if (x > SOB_X && x < SOB_X+SOB_WIDTH &&
 				y > SOB_Y && y < SOB_Y+SOB_HEIGHT) {
-			while (geometry.solver())
-				repaint();//			geometry.solver();
-				repaint();				
-				//exit(0); // Makes it easier to take time with: time ./gui_demo
+			double obj=-1;
+			geometry.saveFile("latest.cnfg");
+			while (obj){
+				if (obj/geometry.numPoints() < 300 && obj > 0 &&
+					geometry.redEqualBlue()){
+					obj=geometry.genetics(1);
+					update();
+					repaint();
+				} else {
+					//Moved here for verbosity reasons
+					cout<<geometry.carr.getCircles()->size()<<" circles collected\n";
+					cout<<geometry.getCircles().size()<<" circles to be inserted\n";
+					cout<<geometry.numPoints()<<" points\n";
+					obj=geometry.solver(1);
+					repaint();//			geometry.solver();
+				}
+			}
+			repaint();
+			exit(0); // Makes it easier to take time with: time ./gui_demo
 		} else
 			geometry.addPoint(x,y);	//Add a new point
-
-		//TODO: Should be WIDHT and HEIGHT from main.cpp
-//		double bbox[] ={-1000.0,1000.0,-1000.0,1000.0};
-		//geometry.getEdges(bbox);
-
 	} else
 		geometry.remove(x,y);	//Remove point
 	repaint();

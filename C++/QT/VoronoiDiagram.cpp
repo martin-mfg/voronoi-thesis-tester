@@ -34,20 +34,20 @@ public:
 	}
 
  	void remove_red_point(Point p){
-        	red_points.erase(std::remove(red_points.begin(), red_points.end(), p), red_points.end());
+		red_points.erase(std::remove(red_points.begin(), red_points.end(), p), 				red_points.end());
 		blue_red_t.remove(blue_red_t.nearest_vertex(p));
 	}
 
  	void remove_blue_point(Point p){
-        	blue_points.erase(std::remove(blue_points.begin(), blue_points.end(), p), blue_points.end());
+		blue_points.erase(std::remove(blue_points.begin(), blue_points.end(), p), 				blue_points.end());
 		blue_red_t.remove(blue_red_t.nearest_vertex(p));
 	}
 
 	QColor getColor( Point p ) {
-		for(std::vector<Point>::iterator it = red_points.begin(); it != red_points.end(); ++it) {
-			if( p.x() == it -> x() && p.y() == it -> y() ) {
+		for(std::vector<Point>::iterator it = red_points.begin();
+				it != red_points.end(); ++it) {
+			if( p.x() == it -> x() && p.y() == it -> y() )
 				return RED;
-			}
 		}
 		return BLUE;
 	}
@@ -56,7 +56,8 @@ public:
 		Triangulation::Finite_edges_iterator it;
 		vector <ColoredEdge> edges;
 		Point source, target, delaunay_source, delaunay_target;
-		for (it = blue_red_t.finite_edges_begin(); it != blue_red_t.finite_edges_end(); it++) {
+		for (it = blue_red_t.finite_edges_begin(); 
+				it != blue_red_t.finite_edges_end(); it++) {
 			CGAL::Object edge = blue_red_t.dual(it);
 			
 			Segment delaunay_segment = blue_red_t.segment(*it);
@@ -79,20 +80,18 @@ public:
 		Point source, target, delaunay_source, delaunay_target;
 		double w = 0;
 		// iterate over all delaunay-edges...
-		for (it = blue_red_t.finite_edges_begin(); it != blue_red_t.finite_edges_end(); it++) {
+		for (it = blue_red_t.finite_edges_begin();
+				it != blue_red_t.finite_edges_end(); it++) {
 			CGAL::Object voronoi_edge = blue_red_t.dual(it);
 			Segment delaunay_segment = blue_red_t.segment(*it);
 			QColor color1 = getColor( delaunay_segment.point(0) );
 			QColor color2 = getColor( delaunay_segment.point(1) );
 			//...if the corresponding voronoi edge is red...
 			if(color1 == RED && color2 == RED) {
-				const Segment * s=CGAL::object_cast<Segment>( & (voronoi_edge) );
-				const Ray * r=CGAL::object_cast<Ray>( & (voronoi_edge) );
-
-				if (s) { 
+				if (const Segment * s=CGAL::object_cast<Segment>( & (voronoi_edge) )) { 
 					w = w+s->squared_length();
-				} else if(r) {
-					w=10000;
+				} else if(const Ray * r=CGAL::object_cast<Ray>( & (voronoi_edge) ) ) {
+					w=100000; // Large enough number
 				}	else {
 					w=-1;
 				}
@@ -119,59 +118,57 @@ public:
 			if(color1 == RED && color2 == RED) {
 				const Point * center;
 				
-				//assign to "center" the point on this voronoi edge that is closest to the delaunay edge
-				const Segment * s=CGAL::object_cast<Segment>( & (voronoi_edge) );
-				if (s) { 
+				//assign to "center" the point on this voronoi edge
+				//that is closest to the delaunay edge
+				if (const Segment * s=CGAL::object_cast<Segment>( & (voronoi_edge) )) { 
 					CGAL::Object intersection = CGAL::intersection( delaunay_segment, *s );
-					const Point * intersection_point = CGAL::object_cast<Point>(&intersection);
+					const Point * intersection_point =
+						CGAL::object_cast<Point>(&intersection);
 					if( intersection_point && false) {
 						center = intersection_point;
 					} else {
 				// It seems that the problem was to use a const pointer
 				// to a temporary object. So this should work for both
-//						random = rand();
 						Point p2;
-//						if (random%2)			
 							p2 = Point( ( s->point(0).x() + s->point(1).x() ) / 2,
 								 ( s->point(0).y() + s->point(1).y() ) / 2 );
-//						else
-//						p2 = s->point(0);
-						squared_radius = CGAL::squared_distance( p2, delaunay_segment.point(0) );
+						squared_radius=
+							CGAL::squared_distance( p2, delaunay_segment.point(0) );
 						new_circle = Circle( p2, squared_radius );
 						circles.push_back( new_circle );
-
 						continue;						
 					}
 				} else {
-					const Ray * r=CGAL::object_cast<Ray>( & (voronoi_edge) );
-					if(r) {
-						CGAL::Object intersection = CGAL::intersection( delaunay_segment, *r );
-						const Point * intersection_point = CGAL::object_cast<Point>(&intersection);
+					if(const Ray * r=CGAL::object_cast<Ray>( & (voronoi_edge) )) {
+						CGAL::Object intersection =
+							CGAL::intersection( delaunay_segment, *r );
+						const Point * intersection_point =
+							CGAL::object_cast<Point>(&intersection);
 						if( intersection_point && false) {
 							center = intersection_point;
 						} else {
 							random = rand() % 20;
-							squared_radius = CGAL::squared_distance( r->point(random), delaunay_segment.point(0) );
+							squared_radius = CGAL::squared_distance
+								( r->point(random), delaunay_segment.point(0) );
 							new_circle = Circle( r->point(random), squared_radius );
 							circles.push_back( new_circle );
 							continue;
 						}
 					} else {
 						const Line * l=CGAL::object_cast<Line>( & (voronoi_edge) );
-						CGAL::Object intersection = CGAL::intersection( delaunay_segment, *l );
-						const Point * intersection_point = CGAL::object_cast<Point>(&intersection);
+						CGAL::Object intersection =
+							CGAL::intersection( delaunay_segment, *l );
+						const Point * intersection_point =
+							CGAL::object_cast<Point>(&intersection);
 						center = intersection_point;
 					}
-				}
-				
-				squared_radius = CGAL::squared_distance( * center, delaunay_segment.point(0) );
+				}				
+				squared_radius =
+					CGAL::squared_distance( * center, delaunay_segment.point(0) );
 				new_circle = Circle( * center, squared_radius );
 				circles.push_back( new_circle );
 			}
 		}
 		return circles;
 	}
-
-
-
 };

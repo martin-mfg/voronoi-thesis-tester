@@ -3,68 +3,52 @@
 #include <stdio.h>
 #include "gurobi_c++.h"
 using namespace std;
-vector <double> solve(vector <vector <double> > M) {
-vector <double> solution;
-  try {	
-    GRBEnv env = GRBEnv();
+vector <double> solve(int verbose, vector <vector <double> > M) {
+	vector <double> solution;
+	try {	
+		GRBEnv env = GRBEnv();
 
-int numPoints = M.size();
-int numCircles = M.back().size();
-//cout<<"solving for "<<numCircles<<" circles and "<<numPoints<<" points"<<endl;
-GRBVar p[numPoints];
-double coeff[numPoints];
-        GRBModel model = GRBModel(env);
-GRBLinExpr expr;
+		int numPoints = M.size();
+		int numCircles = M.back().size();
+		GRBVar p[numPoints];
+		double coeff[numPoints];
+		GRBModel model = GRBModel(env);
+		GRBLinExpr expr;
+
+		if(!verbose)
+			model.getEnv().set(GRB_IntParam_OutputFlag, 0);
 
 
+		for (int i=0;i<numPoints;i++){
+			p[i] = model.addVar(0.0, 1.0, 0.0, GRB_BINARY);
+			coeff[i] = 1.0;
+		}
 
-    // Create variables
+		expr.addTerms(coeff, p,numPoints);
 
-for (int i=0;i<numPoints;i++){
-p[i] = model.addVar(0.0, 1.0, 0.0, GRB_BINARY);
-coeff[i] = 1.0;
-}
+		model.update();
 
-expr.addTerms(coeff, p,numPoints);
+		model.setObjective(expr, GRB_MINIMIZE);
 
-    // Integrate new variables
-
-    model.update();
-
-    // Set objective: maximize x + y + 2 z
-
-    model.setObjective(expr, GRB_MINIMIZE);
-
-for(int i=0;i<numCircles;i++){
-GRBLinExpr cexpr;
-double ccoeff[numPoints];
-for(int j=0;j<numPoints;j++){
-ccoeff[j] = M[j].back();
-M[j].pop_back();
-}
-cexpr.addTerms(ccoeff,p,numPoints);
-model.addConstr(cexpr, GRB_GREATER_EQUAL,1.0);
-}
+		for(int i=0;i<numCircles;i++){
+			GRBLinExpr cexpr;
+			double ccoeff[numPoints];
+			for(int j=0;j<numPoints;j++){
+				ccoeff[j] = M[j].back();
+				M[j].pop_back();
+			}
+			cexpr.addTerms(ccoeff,p,numPoints);
+			model.addConstr(cexpr, GRB_GREATER_EQUAL,1.0);
+		}
     
-    // Optimize model
-
-    model.optimize();
-
+		// Optimize model
+		model.optimize();
 
 
-for (int i=0;i<numPoints;i++){
-solution.push_back((double)p[i].get(GRB_DoubleAttr_X));
-// cout << p[i].get(GRB_DoubleAttr_X) << endl;
-}
-/*
-cout << x.get(GRB_StringAttr_VarName) << " "
-<< x.get(GRB_DoubleAttr_X) << endl;
-cout << y.get(GRB_StringAttr_VarName) << " "
-<< y.get(GRB_DoubleAttr_X) << endl;
-cout << z.get(GRB_StringAttr_VarName) << " "
-<< z.get(GRB_DoubleAttr_X) << endl;
-*/
-// cout << "Obj: " << model.get(GRB_DoubleAttr_ObjVal) << endl;
+
+		for (int i=0;i<numPoints;i++){
+			solution.push_back((double)p[i].get(GRB_DoubleAttr_X));
+		}
 
   } catch(GRBException e) {
     cout << "Error code = " << e.getErrorCode() << endl;
@@ -155,7 +139,7 @@ vector <double> solution;
 
   } catch(GRBException e) {
     cout << "Error code = " << e.getErrorCode() << endl;
-    cout << e.getMessage() << endl;
+//    cout << e.getMessage() << endl;
   } catch(...) {
     cout << "Exception during optimization" << endl;
   }

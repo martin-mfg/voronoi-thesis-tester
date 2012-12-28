@@ -105,7 +105,7 @@ public:
 		while ( new_circles2.size() ) {
 			insert ( arrangement, Circle_Traits::Curve_2(new_circles2.back()) );
 			new_circles2.pop_back();
-			cout << arrangement.number_of_vertices() << endl;
+//			cout << arrangement.number_of_vertices() << endl;
 		}
 		
 		circles.insert( circles.end(), new_circles.begin(), new_circles.end() );
@@ -153,7 +153,7 @@ public:
 		Circle_Arrangement_Type::Ccb_halfedge_circulator halfedge;
 		bool b;
 		Converter_to_normal conv;
-		cout << arrangement.number_of_faces() << " faces incl. unbounded face"<<endl;
+//		cout << arrangement.number_of_faces() << " faces incl. unbounded face"<<endl;
 
 		Circle_Arrangement_Type temp_arrangement =
 			Circle_Arrangement_Type( arrangement );
@@ -200,7 +200,7 @@ public:
 			}
 		}
 		// A print so that we can compare time with gurobi.
-		cout << "Points found in all faces: " << result.size() << endl;
+//		cout << "Points found in all faces: " << result.size() << endl;
 	return result;
 	}
 	

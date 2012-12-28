@@ -41,7 +41,7 @@ class MyGraphics : public QWidget {
 	Q_OBJECT
 
 public:
-	MyGraphics (QWidget* obj=0);
+	MyGraphics (char * argv, QWidget* obj=0);
 	virtual void paintEvent(QPaintEvent *);
 	virtual void mouseMoveEvent(QMouseEvent*);
 	virtual void mousePressEvent(QMouseEvent *);
@@ -49,5 +49,7 @@ public:
 	virtual void keyReleaseEvent(QKeyEvent *event);
 
 	Geometry geometry;
+
+	
 };
 
