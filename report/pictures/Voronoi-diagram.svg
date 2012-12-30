@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="40cm" height="31cm" viewBox="70 79 796 617" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g>
+    <ellipse style="fill: #ff0000" cx="278.9" cy="172.45" rx="3.5" ry="3.5"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #ff0000" cx="278.9" cy="172.45" rx="3.5" ry="3.5"/>
+  </g>
+  <g>
+    <ellipse style="fill: #ff0000" cx="365.45" cy="284.6" rx="3.5" ry="3.5"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #ff0000" cx="365.45" cy="284.6" rx="3.5" ry="3.5"/>
+  </g>
+  <g>
+    <ellipse style="fill: #ff0000" cx="548.425" cy="169.65" rx="3.5" ry="3.5"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #ff0000" cx="548.425" cy="169.65" rx="3.5" ry="3.5"/>
+  </g>
+  <g>
+    <ellipse style="fill: #ff0000" cx="454.4" cy="321.7" rx="3.5" ry="3.5"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #ff0000" cx="454.4" cy="321.7" rx="3.5" ry="3.5"/>
+  </g>
+  <g>
+    <ellipse style="fill: #ff0000" cx="344.375" cy="352.625" rx="3.5" ry="3.5"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #ff0000" cx="344.375" cy="352.625" rx="3.5" ry="3.5"/>
+  </g>
+  <g>
+    <ellipse style="fill: #ff0000" cx="193.537" cy="500.675" rx="3.5" ry="3.5"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #ff0000" cx="193.537" cy="500.675" rx="3.5" ry="3.5"/>
+  </g>
+  <g>
+    <ellipse style="fill: #ff0000" cx="487.95" cy="605.225" rx="3.5" ry="3.5"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #ff0000" cx="487.95" cy="605.225" rx="3.5" ry="3.5"/>
+  </g>
+  <polygon style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #0000ff" points="161.875,317.813 250.375,285.25 413.5,158.125 448.375,213 790.625,426.125 434.375,467.75 355.375,513.75 "/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #0000ff" x1="413.359" y1="159.25" x2="412.234" y2="81.25"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #0000ff" x1="447.984" y1="213" x2="397.484" y2="331.25"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #0000ff" x1="249.141" y1="285.125" x2="397.828" y2="332.125"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #0000ff" x1="434.766" y1="467.875" x2="397.266" y2="331.125"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #0000ff" x1="864.391" y1="436" x2="787.891" y2="425.5"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #0000ff" x1="289.766" y1="694.75" x2="355.328" y2="512.875"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 3; stroke: #0000ff" x1="72.0781" y1="293.875" x2="162.828" y2="318.125"/>
+</svg>
