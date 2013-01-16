@@ -1,9 +1,25 @@
 #include <QtGui>
 #include <iostream>
+#include <sys/time.h>
 #include "mygraphics.h"
 #include "basicDefinitions.h"
 
-MyGraphics::MyGraphics (char * argv,QWidget* obj) :	QWidget(obj), geometry(WIDTH,HEIGHT) {
+timeval t;
+
+void printtime(int numRed, int numBlue){
+			long mtime, seconds, useconds;    
+			timeval s;
+			gettimeofday(&s,NULL);
+			seconds  = s.tv_sec  - t.tv_sec;
+			useconds = s.tv_usec - t.tv_usec;
+			mtime = ((seconds) * 1000 + useconds/1000.0) + 0.5;
+
+			cout << numRed << ", " << numBlue << ", " << mtime << endl;
+
+}
+
+MyGraphics::MyGraphics (char * argv,timeval time, QWidget* obj) :	QWidget(obj), geometry(WIDTH,HEIGHT){
+	t = time;
 	if (argv){
 		geometry.readFile(argv);
 			double obj=-1;
@@ -15,7 +31,8 @@ MyGraphics::MyGraphics (char * argv,QWidget* obj) :	QWidget(obj), geometry(WIDTH
 				} else {
 					obj=geometry.solver(0);
 				}
-			}
+			}   
+			printtime(geometry.numRedPoints(), geometry.numBluePoints());
 			exit(0); // Makes it easier to take time with: time ./gui_demo
 	}
 }
@@ -132,9 +149,10 @@ void MyGraphics::mousePressEvent (QMouseEvent* event){
 		    y > CB_Y && y < CB_Y+CB_HEIGHT) //If clear-button clicked
 			geometry.clearPoints();
 		else if (x > EB_X && x < EB_X+EB_WIDTH &&
-				y > EB_Y && y < EB_Y+EB_HEIGHT) //If Quit-button clicked
+				y > EB_Y && y < EB_Y+EB_HEIGHT) {//If Quit-button clicked
+			printtime(geometry.numRedPoints(), geometry.numBluePoints());
 			exit(0);
-		else if (x > OB_X && x < OB_X+OB_WIDTH &&
+		} else if (x > OB_X && x < OB_X+OB_WIDTH &&
 				y > OB_Y && y < OB_Y+OB_HEIGHT) { //If Quit-button clicked
 			QString filename = QFileDialog::getOpenFileName(
 				this,
@@ -174,6 +192,7 @@ void MyGraphics::mousePressEvent (QMouseEvent* event){
 				}
 			}
 			repaint();
+			printtime(geometry.numRedPoints(), geometry.numBluePoints());
 			exit(0); // Makes it easier to take time with: time ./gui_demo
 		} else
 			geometry.addPoint(x,y);	//Add a new point

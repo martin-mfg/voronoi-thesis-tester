@@ -41,7 +41,7 @@ class MyGraphics : public QWidget {
 	Q_OBJECT
 
 public:
-	MyGraphics (char * argv, QWidget* obj=0);
+	MyGraphics (char * argv, timeval t, QWidget* obj=0);
 	virtual void paintEvent(QPaintEvent *);
 	virtual void mouseMoveEvent(QMouseEvent*);
 	virtual void mousePressEvent(QMouseEvent *);

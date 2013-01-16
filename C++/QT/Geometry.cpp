@@ -207,6 +207,22 @@ class Geometry {
 			update();
 		}
 
+		int numRedPoints(){
+			int counter=0;
+			for (int i=0;i<numPoints();i++)
+				if(getColor(i) == RED)
+					counter++;
+			return counter;
+		}		
+
+		int numBluePoints(){
+			int counter=0;
+			for (int i=0;i<numPoints();i++)
+				if(getColor(i) == BLUE)
+					counter++;
+			return counter;
+		}		
+
 		void readFile(const char * filename){
 			std::ifstream inFile(filename);
 			int x,y,c;
