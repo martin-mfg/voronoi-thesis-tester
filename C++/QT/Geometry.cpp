@@ -16,6 +16,7 @@ class Geometry {
 		vector <ColoredEdge> edges;	//Voronoi-edges
 		vector <Circle> circles;	//the red circles that shall be covered
 		Rectangle bounding_box;
+		VoronoiDiagram voronoi;
 
 		void shift(int i){
 			if(i==gi-1)
@@ -108,7 +109,7 @@ class Geometry {
 	public:
 		int current_color;
 		int mode;
-			VoronoiDiagram voronoi;	//create a VoronoiDiagram object
+		CircleArrangement carr;
 
 		Geometry (int bbox_width, int bbox_height) {
 			gi=0;
@@ -191,6 +192,10 @@ class Geometry {
 			edges.clear();
 			circles.clear();
 			update();
+			VoronoiDiagram empty_voronoi;
+			voronoi = empty_voronoi;
+			CircleArrangement empty_carr;
+			carr = empty_carr;
 		}
 
 		// Can remove a point directly, if the index is known
@@ -318,7 +323,6 @@ class Geometry {
 			return minimum;
 		}
 
-		CircleArrangement carr;
 		int solver(int verbose) {
 			update();
 			vector<PointInCircles>::iterator it;

@@ -1,6 +1,5 @@
 #include <QtGui>
 #include "mygraphics.h"
-#include <sys/time.h>
 #include <unistd.h>
 #include <string>
 //#include "gurobi_c++.h"
@@ -14,7 +13,7 @@ void randomfile(int numPoints){
 	outFile.open("random.cnfg", ios::trunc);
 
 	if(!outFile) {
-		std::cerr << "Unable to open file datafile.txt";
+		std::cerr << "Unable to open file random.cnfg";
 	} else {
 		for(int i=0;i<numPoints;i++) {
 				outFile << rand()%500 << " " << rand()%500 << " " << "1" << endl;
@@ -24,17 +23,22 @@ void randomfile(int numPoints){
 
 
 int main (int argc, char* argv[]){
-	timeval t;
-	gettimeofday(&t,NULL);
 	QApplication app(argc,argv);
+	std::string filename;
+
+	if ( argc == 1 ) {
+		filename = "";
+	} else {
+		filename = argv[1];
+	}
+	
 	if (argc > 1)
 	if (strcmp(argv[1], "random") == 0) {
-//		strcpy(argv[1], "random.cnfg");
-		argv[1] = "random.cnfg";
+		filename = "random.cnfg";
 		randomfile(atoi(argv[2]));
 	}
 	
-	MyGraphics g(argv[1], t);
+	MyGraphics g(filename.c_str());
 	
 	g.resize(WIDTH,HEIGHT);
 	g.show();

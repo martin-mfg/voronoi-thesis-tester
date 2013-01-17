@@ -4,24 +4,23 @@
 #include "mygraphics.h"
 #include "basicDefinitions.h"
 
-timeval t;
-
-void printtime(int numRed, int numBlue){
+void printtime(int numRed, int numBlue, timeval start){
 			long mtime, seconds, useconds;    
-			timeval s;
-			gettimeofday(&s,NULL);
-			seconds  = s.tv_sec  - t.tv_sec;
-			useconds = s.tv_usec - t.tv_usec;
+			timeval end;
+			gettimeofday(&end,NULL);
+			seconds  = end.tv_sec  - start.tv_sec;
+			useconds = end.tv_usec - start.tv_usec;
 			mtime = ((seconds) * 1000 + useconds/1000.0) + 0.5;
 
 			cout << numRed << ", " << numBlue << ", " << mtime << endl;
 
 }
 
-MyGraphics::MyGraphics (char * argv,timeval time, QWidget* obj) :	QWidget(obj), geometry(WIDTH,HEIGHT){
-	t = time;
-	if (argv){
+MyGraphics::MyGraphics (const char * argv, QWidget* obj) :	QWidget(obj), geometry(WIDTH,HEIGHT){
+	if ( strlen(argv) > 0 ){
 		geometry.readFile(argv);
+			timeval start;
+			gettimeofday(&start,NULL);
 			double obj=-1;
 			while (obj){
 				if (obj/geometry.numPoints() < 300 && obj > 0 &&
@@ -32,7 +31,7 @@ MyGraphics::MyGraphics (char * argv,timeval time, QWidget* obj) :	QWidget(obj), 
 					obj=geometry.solver(0);
 				}
 			}   
-			printtime(geometry.numRedPoints(), geometry.numBluePoints());
+			printtime(geometry.numRedPoints(), geometry.numBluePoints(), start);
 			exit(0); // Makes it easier to take time with: time ./gui_demo
 	}
 }
@@ -150,7 +149,6 @@ void MyGraphics::mousePressEvent (QMouseEvent* event){
 			geometry.clearPoints();
 		else if (x > EB_X && x < EB_X+EB_WIDTH &&
 				y > EB_Y && y < EB_Y+EB_HEIGHT) {//If Quit-button clicked
-			printtime(geometry.numRedPoints(), geometry.numBluePoints());
 			exit(0);
 		} else if (x > OB_X && x < OB_X+OB_WIDTH &&
 				y > OB_Y && y < OB_Y+OB_HEIGHT) { //If Quit-button clicked
@@ -187,13 +185,11 @@ void MyGraphics::mousePressEvent (QMouseEvent* event){
 					cout<<geometry.carr.getCircles()->size()<<" circles collected\n";
 					cout<<geometry.getCircles().size()<<" circles to be inserted\n";
 					cout<<geometry.numPoints()<<" points\n";
-					obj=geometry.solver(1);
+					obj=geometry.solver(0);
 					repaint();//			geometry.solver();
 				}
 			}
 			repaint();
-			printtime(geometry.numRedPoints(), geometry.numBluePoints());
-			exit(0); // Makes it easier to take time with: time ./gui_demo
 		} else
 			geometry.addPoint(x,y);	//Add a new point
 	} else
