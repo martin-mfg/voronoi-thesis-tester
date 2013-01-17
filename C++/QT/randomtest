@@ -1,0 +1,5 @@
+#!/bin/bash
+for x in {1..100}
+do
+	./gui_demo random 7
+done

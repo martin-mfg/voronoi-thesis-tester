@@ -1,6 +1,7 @@
 #include "basicDefinitions.h"
 #include "VoronoiDiagram.cpp"
 #include <fstream>
+#include <sys/time.h>
 #include "CircleArrangement.cpp"
 
 // point "hitbox"
@@ -121,8 +122,8 @@ class Geometry {
 		//This function returns true if the number of blue points equal
 		//the number of red points
 		bool redEqualBlue(){
-			int counter;
-			for (int i=0;i<gi;i++){
+			int counter = 0;
+			for (int i=0; i<gi; i++){
 				if (gc[i] == BLUE)
 					counter++;
 				else
@@ -230,7 +231,7 @@ class Geometry {
 
 		void readFile(const char * filename){
 			std::ifstream inFile(filename);
-			int x,y,c;
+			double x,y,c;
 
 			if(!inFile) {
 				std::cerr << "Unable to open file datafile.txt";
@@ -276,50 +277,59 @@ class Geometry {
 		}
 
 		//v==0 means no print
-		double genetics(int verbose){
-		double minimum = voronoi.objF();
-		vector <Point> reds;
-		vector <Point> blues;
-		VoronoiDiagram v;
-		double temp=0;
-		while (minimum){
-			if (minimum == 0){
-//				cout << "Solution found!" << endl;
-				return 0;
+		double genetics(int verbose,timeval t){
+			double minimum = voronoi.objF();
+			vector <Point> reds;
+			vector <Point> blues;
+			VoronoiDiagram v;
+			double temp=0;
+			long mtime, seconds, useconds;
+			timeval s;
+			while (minimum){
+			gettimeofday(&s,NULL);
+			seconds  = s.tv_sec  - t.tv_sec;
+			mtime = ((seconds) * 1000 + useconds/1000.0) + 0.5;
+			if (mtime > 60000){
+				cout << "Time out" << endl;
+				return -1;
 			}
-			for (int j=0;j<gi;j++)	{		
-				if (gc[j] == RED)
-					reds.push_back(Point(gx[j],gy[j]));
-				else if (rand()%2)
-					blues.push_back(Point(fRand(-1.5,1.5)+gx[j],fRand(-1.5,1.5)+gy[j]));
-				else
-					blues.push_back(Point(gx[j],gy[j]));
-			}
-			v.set_red_points(reds);
-			v.set_blue_points(blues);
-			v.update();
-			temp = v.objF();
-			if (temp < minimum){
-				for (int k=gi-1;k!=0;k--){
-					if (gc[k]==RED){
-						reds.pop_back();
-						continue;
-					} else {
-					gx[k]=blues.back().x();
-					gy[k]=blues.back().y();
-					blues.pop_back();
-					}
+				if (minimum == 0){
+	//				cout << "Solution found!" << endl;
+					return 0;
 				}
-				voronoi = v;
-				minimum = temp;	
-				update();		
-				if (verbose)
-					cout << minimum << endl;
-				break;
+				for (int j=0;j<gi;j++)	{		
+					if (gc[j] == RED)
+						reds.push_back(Point(gx[j],gy[j]));
+					else if (rand()%2)
+						blues.push_back(Point(fRand(-1.5,1.5)+gx[j],fRand(-1.5,1.5)+gy[j]));
+					else
+						blues.push_back(Point(gx[j],gy[j]));
+				}
+				v.set_red_points(reds);
+				v.set_blue_points(blues);
+				v.update();
+				temp = v.objF();
+				if (temp < minimum){
+					for (int k=gi-1;k!=0;k--){
+						if (gc[k]==RED){
+							reds.pop_back();
+							continue;
+						} else {
+						gx[k]=blues.back().x();
+						gy[k]=blues.back().y();
+						blues.pop_back();
+						}
+					}
+					voronoi = v;
+					minimum = temp;	
+					update();		
+					if (verbose)
+						cout << minimum << endl;
+					break;
+				}
+				reds.clear();
+				blues.clear();
 			}
-			reds.clear();
-			blues.clear();
-		}
 			return minimum;
 		}
 

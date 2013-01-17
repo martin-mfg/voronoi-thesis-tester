@@ -16,21 +16,42 @@ void printtime(int numRed, int numBlue, timeval start){
 
 }
 
+timeval start;
+
 MyGraphics::MyGraphics (const char * argv, QWidget* obj) :	QWidget(obj), geometry(WIDTH,HEIGHT){
 	if ( strlen(argv) > 0 ){
+	repeat:
 		geometry.readFile(argv);
-			timeval start;
+
 			gettimeofday(&start,NULL);
 			double obj=-1;
 			while (obj){
 				if (obj/geometry.numPoints() < 300 && obj > 0 &&
 					geometry.redEqualBlue()){
-					obj=geometry.genetics(0);
+					obj=geometry.genetics(0,start);
+					if (obj == -1)
+						break;
 					update();
 				} else {
 					obj=geometry.solver(0);
 				}
 			}   
+
+			if (obj==-1){
+				std::string s;
+				std::stringstream out;
+				out << start.tv_sec;
+				s = out.str();
+				string file = "testing/";
+				file += s;
+				file += ".cnfg";
+				geometry.saveFile(file.c_str());
+			}
+			if(geometry.numRedPoints() < geometry.numBluePoints()) {
+				geometry.clearPoints();
+				goto repeat;
+			}
+
 			printtime(geometry.numRedPoints(), geometry.numBluePoints(), start);
 			exit(0); // Makes it easier to take time with: time ./gui_demo
 	}
@@ -177,7 +198,7 @@ void MyGraphics::mousePressEvent (QMouseEvent* event){
 			while (obj){
 				if (obj/geometry.numPoints() < 300 && obj > 0 &&
 					geometry.redEqualBlue()){
-					obj=geometry.genetics(1);
+					obj = geometry.genetics(1,start);
 					update();
 					repaint();
 				} else {
