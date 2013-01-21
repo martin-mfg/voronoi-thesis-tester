@@ -19,11 +19,12 @@ void printtime(int numRed, int numBlue, timeval start){
 timeval start;
 
 MyGraphics::MyGraphics (const char * argv, QWidget* obj) :	QWidget(obj), geometry(WIDTH,HEIGHT){
+	gettimeofday(&start,NULL);	
 	if ( strlen(argv) > 0 ){
 	repeat:
 		geometry.readFile(argv);
 
-			gettimeofday(&start,NULL);
+
 			double obj=-1;
 			while (obj){
 				if (obj/geometry.numPoints() < 300 && obj > 0 &&

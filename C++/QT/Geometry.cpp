@@ -289,7 +289,7 @@ class Geometry {
 			gettimeofday(&s,NULL);
 			seconds  = s.tv_sec  - t.tv_sec;
 			mtime = ((seconds) * 1000 + useconds/1000.0) + 0.5;
-			if (mtime > 60000){
+			if (mtime > 300000){
 				cout << "Time out" << endl;
 				return -1;
 			}
