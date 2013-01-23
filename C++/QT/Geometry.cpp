@@ -95,6 +95,7 @@ class Geometry {
 			calculateCircles();
 			calculateEdges();
 		}
+	public:
 		
 		void remove_blue_points() {
 			vector<double> to_delete;
@@ -107,7 +108,6 @@ class Geometry {
 			}
 		}
 
-	public:
 		int current_color;
 		int mode;
 		CircleArrangement carr;

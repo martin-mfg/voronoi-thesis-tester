@@ -3,20 +3,33 @@
 #include <sys/time.h>
 #include "mygraphics.h"
 #include "basicDefinitions.h"
-
-void printtime(int numRed, int numBlue, timeval start){
-			long mtime, seconds, useconds;    
-			timeval end;
-			gettimeofday(&end,NULL);
-			seconds  = end.tv_sec  - start.tv_sec;
-			useconds = end.tv_usec - start.tv_usec;
-			mtime = ((seconds) * 1000 + useconds/1000.0) + 0.5;
-
-			cout << numRed << ", " << numBlue << ", " << mtime << endl;
-
+timeval start;
+bool timeout(){
+  long mtime, seconds, useconds;    
+  timeval end;
+  gettimeofday(&end,NULL);
+  seconds  = end.tv_sec  - start.tv_sec;
+  useconds = end.tv_usec - start.tv_usec;
+  mtime = ((seconds) * 1000 + useconds/1000.0) + 0.5;
+  if (mtime > 300000)
+    return true;
+  else
+    return false;
 }
 
-timeval start;
+void printtime(int numRed, int numBlue, timeval start){
+  long mtime, seconds, useconds;    
+  timeval end;
+  gettimeofday(&end,NULL);
+  seconds  = end.tv_sec  - start.tv_sec;
+  useconds = end.tv_usec - start.tv_usec;
+  mtime = ((seconds) * 1000 + useconds/1000.0) + 0.5;
+  
+  cout << numRed << ", " << numBlue << ", " << mtime << endl;
+  
+}
+
+
 
 MyGraphics::MyGraphics (const char * argv, QWidget* obj) :	QWidget(obj), geometry(WIDTH,HEIGHT){
 	gettimeofday(&start,NULL);	
@@ -34,9 +47,14 @@ MyGraphics::MyGraphics (const char * argv, QWidget* obj) :	QWidget(obj), geometr
 						break;
 					update();
 				} else {
+				  if (timeout())
+				    exit(0);
+				  else
 					obj=geometry.solver(0);
 				}
 			}   
+			if(geometry.numRedPoints() < geometry.numBluePoints()) {
+				geometry.clearPoints();
 
 			if (obj==-1){
 				std::string s;
@@ -46,10 +64,9 @@ MyGraphics::MyGraphics (const char * argv, QWidget* obj) :	QWidget(obj), geometr
 				string file = "testing/";
 				file += s;
 				file += ".cnfg";
+				geometry.remove_blue_points();
 				geometry.saveFile(file.c_str());
 			}
-			if(geometry.numRedPoints() < geometry.numBluePoints()) {
-				geometry.clearPoints();
 				goto repeat;
 			}
 
