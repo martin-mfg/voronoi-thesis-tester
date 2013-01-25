@@ -133,7 +133,7 @@ The subset $\mathcal B_2$ = \{\{1,2\}, \{2,3\}, \{2,5\}\} has the union \{1,2,3,
 A minimal solution is $\mathcal B_3$ = \{\{1,2\}, \{3,5\}\}. \newline
 The set cover problem is known to be NP-complete.\hyperref[ref:karp]{4}
 \section{Problem formulation}
-Given a set $\mathcal{R}$ of red points, find a set $\mathcal{B}$ of blue points such that in the Voronoi diagram of $\mathcal{R} \cup \mathcal{B}$, no two regions corresponding to points in $\mathcal{R}$ are incident to each other. For the Delaunay triangulation of $\mathcal{R} \cup \mathcal{B}$, this means that there is no edge connecting two red points.
+Given a set $\mathcal{R}$ of red points, find a set $\mathcal{B}$ of blue points such that in the Voronoi diagram of $\mathcal{R} \cup \mathcal{B}$, no two regions corresponding to points in $\mathcal{R}$ are incident to each other. For the Delaunay triangulation of $\mathcal{R} \cup \mathcal{B}$, this means that there is no edge connecting two red points. The conjecture that |$\mathcal{B}$| = |$\mathcal{R}$| is needed in an optimal solution is to be experimentally explored.
 
 
 \section{Background}
@@ -155,6 +155,7 @@ Although not yet shown, the problem is suspected to be NP-hard \hyperref[ref:blo
 
 \section{Algorithms}
 \subsection{General outline}
+\label{ref:Algorithm}
 \begin{enumerate}
 \item
 For the set $\mathcal P$ of points (both red and blue) find the delaunay triangulation.
@@ -235,15 +236,9 @@ while (f(x) > 0
 		replace the current solution x with y.
 \end{lstlisting}
 
-There are several candidates for choosing the objective function \emph{f}, for example the number of red delaunay circles or red voronoi edges. For this problem, we have chosen the sum the squared lengths of all red voronoi edges. (SHOULD I EXPLAIN "WHY" HERE, OR LATER?)
+There are several candidates for choosing the objective function \emph{f}, for example the number of red delaunay circles or red voronoi edges. For this problem, we have chosen the sum the squared lengths of all red voronoi edges.
 
 \section{Results}
-\begin{itemize}
-\item
-Some problems, and the resulting solution.
-\item
-How well does it perform?
-\end{itemize}
 
 \subsection{Graphical interface}
 In order to easily specify new problems, and to visualize the process of solving the problems, a minimalistic graphical interface is used. It has methods for adding, moving and removing points. It automatically updates and draws the voronoi diagram corresponding to the set of points, and also a set of delaunay circles corresponding to the red edges in the voronoi diagram.
@@ -257,20 +252,45 @@ Additionally, methods for saving and loading configurations were added to simpli
    {An example of a problem configuration (left) and a found solution to the same problem (right).}
 \end{figure}
 
-\section{Speed and capabilities}
+\subsection{Speed}
+The problem of finding a blocking set of blue points is computationally hard, since the set-cover problem is NP-hard and also by its own, assuming the conjuncture in \hyperref[ref:blocking]{2} is true. This complexity is reflected in the time it takes to solve a problem, shown in figure 4.
+
+The figure shows the average time of solving a problem, with between 7 and 12 points. The program was run on forty randomely generated problems each (not the same forty). Due to the existence of local minima in the search space, there is a small risk that a run takes unusually long time. Such statistical \emph{outliers} greatly impact the total average, and thus both a graph with and without these outlier values have been included.
+
 \begin{figure}[h]
-\includegraphics[width=0.6\textwidth]{pictures/speedStats.png}
+\begin{center}
+\label{ref:speed}
+\includegraphics[width=0.8\textwidth]{pictures/speedStats.png}
  \caption[Close up of \textit{Hemidactylus} sp.]
    {Graph showing average time to find a solution, for problems of different size. The average is based on forty runs, and the results are shown both with and without outlier values.}
+\end{center}
 \end{figure}
 
 
+In all the tested problems, the number of blue points in the final solution was the same as the number of red points in the original problem.
+
+
+\subsection{Exact or Inexact Points}
+A design issue was that of finding a point in every face of the arrangement (step 4 in section  \hyperref[ref:Algorithm]{4.1}). The algorithm presented in section \hyperref[sec:findPoints]{4.3} provides satisfying results, but is high on computation.
+
+An alternative approach is to simply chose two points on the boundary of a face, and chose the middle point. Such a point will be within the face 50\% of the cases, since the boundary of the face in a restricted area is convex or concave with the same probability. 
+
+This latter approach is computationally easy, but does not fully fulfill the requirement of the algorithm. If is not known if this fact leads to undesired behavior in some cases, for example non-optimal solutions or non-convergence. The gain in time, compared to the secure algorithm in 4.3, is shown in the graph below.
+
+
+
+\section{Conclusions}
+The purpose of this project has been to experimentally explore the claim, that in an optimal solution |$\mathcal{B}$| = |$\mathcal{R}$|. It must be noted that this can be falsified through experimentation by finding a counter-example to the claim, but it can never be experimentally proven. During testing, no counter-examples to the claim have been found, leaving us to believe that this conjecture is in fact true.
+
 \section{Discussion}
+During the course of this project, we have used our tool to solve a large amount of problem, but with the big limitation with respect to performance. Due to the exponential complexity of this problem (shown in \hyperref[ref:speed] {figure 7}), we have been limited to problems of a relatively small size. To more fully investigate this claim, the solver would likely need to be improved.
+
+One way to do this is to more fully investigate how and when random search is effective. During our testing, a random search stage was entered when the total length of the red segments in the voronoi diagram was smaller than 300*N. This is a very course estimation, which if too large inevitably leads to a local minima, and if to small means the problem solved faster. It is also likely that using a similar but more sophisticated technique, such as tabu search, would be more effective.
+
+
 \begin{itemize}
 \item
-Point in face - even if we don't include the above section, we must note that by not using the point-in-face algorithm, there is a risk that the problem is unsolvable.
-\item
-Random search has a few things to note. Local minima is always a problem. Then two things that can be optimized, but we don't have time; first the threshhold, where we decide to start doing an RA, second the ammount of randomization used. Tabu search would probably work awesome.
+Random search has a few things to note. Local minima is always a problem. Then two things that can be optimized, but we don't have time; first the threshhold, where we decide to start doing an RA, second the amount of randomization used. Tabu search would probably work awesome.
 \item
 Complexity of our algorithm? 
 \end{itemize}
@@ -328,7 +348,7 @@ Delaunay circumcircles, GNU Free Documenation Licence, N\"u es
 http://commons.wikimedia.org/wiki/File:Delaunay\_circumcircles.png
 
 \item
-Delaunay triangulation 1-3, public domain, user Capheiden 
+Delaunay triangulation picture 1-3, public domain, user Capheiden 
 
 http://upload.wikimedia.org/wikipedia/de/1/17/Voronoi-Delaunay.svg
 

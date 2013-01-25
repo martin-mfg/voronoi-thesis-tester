@@ -1,6 +1,18 @@
 #!/bin/bash
 for x in {1..50}
 do
-	./gui_demo random 12
+	./gui_demo random 4
+done
+for x in {1..50}
+do
+	./gui_demo random 5
+done
+for x in {1..50}
+do
+	./gui_demo random 6
+done
+for x in {1..50}
+do
+	./gui_demo random 7
 done
 
