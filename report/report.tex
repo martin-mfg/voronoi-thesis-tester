@@ -88,25 +88,24 @@
 
 \section{Introduction}
 \subsection{Voronoi Diagram}
-Given a set of points in space, a voronoi diagram is a partitioning of the space into a set of voronoi regions or "cells". The voronoi region corresponding to a point \emph{p} corresponds to all points that are closer to \emph{p} that any other point in space.
+Given a set of points in space, a Voronoi diagram is a partitioning of the space into a set of Voronoi regions or "cells". The Voronoi region corresponding to a point \emph{p} consists of all points that are closer to \emph{p} than to any other point in space.
 
 \begin{figure}[hb]
 \centering
 \includegraphics[width=0.4\textwidth]{pictures/Voronoi-diagram.png}
  \caption[Close up of \textit{Hemidactylus} sp.]
-{A voronoi diagram.}
+{A Voronoi diagram.}
 \end{figure}
 
 \subsection{Delaunay triangulation}
-A delaunay triangulation for a set of points in space is a triangulation of the points, with the added property that no point is inside the circumcircle of any triangle in the triangulation.
-
-The delaunay triangulation is dual to the voronoi diagram.
+A Delaunay triangulation for a set of points in space is a triangulation of the points, with the added property that no point is inside the circumcircle of any triangle in the triangulation. \newline
+The Delaunay triangulation is dual to the Voronoi diagram. 
 
 \begin{figure}[hb]
 \centering
 \includegraphics[width=0.4\textwidth]{pictures/Delaunay_circumcircles.png}
  \caption[Close up of \textit{Hemidactylus} sp.]
-{A delaunay triangulation, with a set of corresponding delaunay circles.}
+{A Delaunay triangulation, with a set of corresponding Delaunay circles.}
 \end{figure}
 
 
@@ -117,7 +116,7 @@ The delaunay triangulation is dual to the voronoi diagram.
 \includegraphics[width=0.3\textwidth]{pictures/Delaunay-Triangulation2.png}
 \includegraphics[width=0.3\textwidth]{pictures/Delaunay-Triangulation3.png}
  \caption[Close up of \textit{Hemidactylus} sp.]{
-A triangulation of a set of points (left), the corresponding voronoi diagram (middle) and the overlapping of the triangulation and voronoi diagram, emphasizing the dual relationship (right).}
+A triangulation of a set of points (left), the corresponding Voronoi diagram (middle) and the overlapping of the triangulation and the Voronoi diagram, emphasizing the dual relationship (right).}
 \end{figure}
 
 \subsection{Arrangement}
@@ -125,25 +124,21 @@ A triangulation of a set of points (left), the corresponding voronoi diagram (mi
 Given a set of planar curves, the arrangement is the subdivision of the plane into zero-dimensional, one-dimensional and two-dimensional cells, called vertices, edges and faces, respectively induced by the given curves. \hyperref[ref:cgal]{1}
 
 \subsection{The Set Cover Problem}
-Given a set $\mathcal A$ of sets of numbers, the set cover problem is the problem of finding a minimal subset $\mathcal B$ of $\mathcal A$, so that the elements of the union of the sets in $\mathcal B$ is exactly those of the union of the whole of $\mathcal A$.
+Given a set $\mathcal A$ of sets of numbers, the set cover problem is the problem of finding a minimal subset $\mathcal B$ of $\mathcal A$, so that the union of the sets in $\mathcal B$ is equal to the union of all elements of $\mathcal A$.
 
-\subsubsection{example}
-Let $\mathcal A$ =  \{\{1,2\}, \{2,3\}, \{2,5\}, \{3,5\}\}. the elements of the union of all sets of $\mathcal A$ is \{1,2,3,5\}.
-
-The subset $\mathcal B_1$ = \{\{1,2\}, \{2,3\}\} has a union \{1,2,3\} and does not cover the set $\mathcal A$.
-
-The subset $\mathcal B_2$ = \{\{1,2\}, \{2,3\}, \{2,5\}\} has a union \{1,2,3,5\} that covers $\mathcal A$, but it is not minimal.
-
-A minimal solution is $\mathcal B_3$ = \{\{1,2\}, \{3,5\}\}.
-
+\subsubsection{Example}
+Let $\mathcal A$ =  \{\{1,2\}, \{2,3\}, \{2,5\}, \{3,5\}\}. The union of all sets of $\mathcal A$ is \{1,2,3,5\}. \newline
+The subset $\mathcal B_1$ = \{\{1,2\}, \{2,3\}\} has the union \{1,2,3\} and does not cover the set $\mathcal A$. \newline
+The subset $\mathcal B_2$ = \{\{1,2\}, \{2,3\}, \{2,5\}\} has the union \{1,2,3,5\} that covers $\mathcal A$, but it is not minimal. \newline
+A minimal solution is $\mathcal B_3$ = \{\{1,2\}, \{3,5\}\}. \newline
 The set cover problem is known to be NP-complete.\hyperref[ref:karp]{4}
 \section{Problem formulation}
-Given a set $\mathcal{R}$ of red points, find a set $\mathcal{B}$ of blue points such that in the voronoi diagram of $\mathcal{R} \cup \mathcal{B}$, no two regions corresponding to points in $\mathcal{R}$ are incident to each other. For the delaunay triangulation of $\mathcal{R} \cup \mathcal{B}$, this means that in the triangulation, there is no edge connecting two red points.
+Given a set $\mathcal{R}$ of red points, find a set $\mathcal{B}$ of blue points such that in the Voronoi diagram of $\mathcal{R} \cup \mathcal{B}$, no two regions corresponding to points in $\mathcal{R}$ are incident to each other. For the Delaunay triangulation of $\mathcal{R} \cup \mathcal{B}$, this means that there is no edge connecting two red points.
 
 
 \section{Background}
 \subsection{Upper and lower bounds}
-Given a set $\mathcal{R}$ of red points, with $|\mathcal{R}| = N$, it has been shown \hyperref[ref:blocking]{2} that at least N-1 points are needed to solve this problem. This is exemplified in the picture below, and always apply to the special case when all points lie in row. In the general case, it has been shown that for $N>2$ there are cases where at least N blue dots are required to solve the problem.
+Given a set $\mathcal{R}$ of red points with $N = |\mathcal{R}|$, it has been shown \hyperref[ref:blocking]{2} that at least N-1 points are needed to solve this problem. This is exemplified in the picture below, and always applies to the special case when all points lie in row. In the general case, it has been shown that for $N>2$ there are cases where at least N blue points are required to solve the problem.
 
 \begin{figure}[hb]
 \centering
@@ -152,7 +147,7 @@ Given a set $\mathcal{R}$ of red points, with $|\mathcal{R}| = N$, it has been s
 {Example of points not in general position, having a solution with N-1 blue points.}
 \end{figure}
 
-In the general case, it has been proved \hyperref[ref:blocking]{2} that at most $3N/2$ blue points is needed to solve the problem, and in the case where the points in  $\mathcal{R}$ are in convex position, $5N/2$ points are sufficient. It has been conjectured that $N$ points are sufficient to solve the problem in the general case.
+In the general case, it has been proved \hyperref[ref:blocking]{2} that at most $3N/2$ blue points are needed to solve the problem, and in the case where the points in  $\mathcal{R}$ are in convex position, $5N/2$ points are sufficient. It has been conjectured that $N$ points are sufficient to solve the problem in the general case.
 
 
 \subsection{complexity}
