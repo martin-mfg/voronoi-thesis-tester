@@ -147,10 +147,10 @@ Given a set $\mathcal{R}$ of red points with $N = |\mathcal{R}|$, it has been sh
 {Example of points not in general position, having a solution with N-1 blue points.}
 \end{figure}
 
-In the general case, it has been proved \hyperref[ref:blocking]{2} that at most $3N/2$ blue points are needed to solve the problem, and in the case where the points in  $\mathcal{R}$ are in convex position, $5N/2$ points are sufficient. It has been conjectured that $N$ points are sufficient to solve the problem in the general case.
+In the general case, it has been proven \hyperref[ref:blocking]{2} that at most $3N/2$ blue points are needed to solve the problem, and in the case where the points in  $\mathcal{R}$ are in convex position, $5N/2$ points are sufficient. It has been conjectured that $N$ points are sufficient to solve the problem in the general case.
 
 
-\subsection{complexity}
+\subsection{Complexity}
 Although not yet shown, the problem is suspected to be NP-hard \hyperref[ref:blocking]{2}, as a similar problem has been proven to be NP-hard. \hyperref[ref:alexander]{3}
 
 \section{Algorithms}
@@ -158,52 +158,53 @@ Although not yet shown, the problem is suspected to be NP-hard \hyperref[ref:blo
 \label{ref:Algorithm}
 \begin{enumerate}
 \item
-For the set $\mathcal P$ of points (both red and blue) find the delaunay triangulation.
+For the set $\mathcal P$ of points (both red and blue) find the Delaunay triangulation.
 \item
 \label{alg:part2}
-For each edge connecting two red points in the triangulation, \hyperref[sec:findCircle]{find a circle} with the two points on its perimeter and add these to the (possibly empty) set of circles $\mathcal C$.
+For each edge connecting two red points in the triangulation, \hyperref[sec:findCircle]{find a circle} with the two points on its perimeter and the circle's centre on the edge and add these to the (initially empty) set of circles $\mathcal C$.
 \item
 Calculate the \hyperref[sec:arrangement]{arrangement} $\mathcal A$ of the circles $\mathcal C$.
 \item
 \hyperref[sec:findPoints]{Find a set of points} $\mathcal P^*$, so that for every face in the arrangement $\mathcal A$, exactly one point is located in the interior. For every point $\rho  \in \mathcal P^*$ and every circle $\varsigma$ in $\mathcal C$, determine whether $\rho$ is in the interior of $\varsigma$.
 \item
-\hyperref[sec:gurobi]{Find a minimum subset} of $\mathcal P^*$, so that every circle in $\mathcal C$ is covered by at least one point.
+\hyperref[sec:gurobi]{Find a minimum subset} $\mathcal P^**$ of $\mathcal P^*$, so that every circle in $\mathcal C$ is covered by at least one point.
 \item
-Calculate a triangulation for the set of points $\mathcal P^* \cup Red(\mathcal P )$, where  $Red(\mathcal P )$ denotes the set of red points in $\mathcal P$.
+Set $\mathcal P$ to $\mathcal P^** \cup Red(\mathcal P )$, where  $Red(\mathcal P )$ denotes the set of red points in $\mathcal P$. Calculate the Delaunay triangulation for $\mathcal P$.
 \item
-For every red edge still in the triangulation, calculate the length of its dual in the voronoi graph. If no red edges exists, terminate. If the length is sufficiently small, use \hyperref[sec:rand]{random search } to find an optimal solution. Otherwise, restart from \hyperref[alg:part2]{2}.
+For every red edge still in the triangulation, calculate the length of its dual in the Voronoi graph. If no red edges exist in the triangulation, terminate. If the sum of the calculated lengths is sufficiently small, use \hyperref[sec:rand]{random search } to find an optimal solution. Otherwise, restart from \hyperref[alg:part2]{2}.
 \end{enumerate}
 
 \subsection{Finding circles corresponding to unsatisfied edges}
 \label{sec:findCircle}
-Following the terminology used by the CGAL-project, a {\bf line} is a line unbounded on both sides, whereas an line that is bounded on one side is called a {\bf ray} and when bounded on both sides it is called a {\bf segment}. The approach for choosing circles depends on which type of voronoi edge is to be blocked. Given a voronoi edge, corresponding to the neighbouring points $p_1$ and $p_2$, there are the following cases:
+Following the terminology used by the CGAL-project, a {\bf line} is a line unbounded on both sides, whereas an line that is bounded on one side is called a {\bf ray} and when bounded on both sides it is called a {\bf segment}. \newline 
+The approach for choosing a circle depends on which type of Voronoi edge is to be blocked. Given a Voronoi edge corresponding to the neighbouring points $p_1$ and $p_2$, there are the following cases:
 
 \begin{enumerate}
 \item
-For a {\bf line}, the smallest possible circle is chosen. This is the circle with its centre in the middle of $p_1$ and $p_2$, and a radius such that $p_1$ and $p_2$ are on its perimeter. A line only occurs in the voronoi diagram in the trivial case where all points lie in a straight line.
+For a {\bf line}, the smallest possible circle is chosen. This is the circle with its centre in the middle of $p_1$ and $p_2$, and a radius such that $p_1$ and $p_2$ are on the perimeter of the circle. A line only occurs in the Voronoi diagram in the trivial case where all points lie in a straight line.
 \item
-Note that a {\bf ray} in the voronoi diagram is always associated with two points on the convex hull, for which infinitely large circles exist with the points $p_1$ and $p_2$ on its perimeter. In this case, a circle is randomly chosen.
+A {\bf ray} in the Voronoi diagram is always associated with two points on the convex hull of the Delaunay triangulation. There are infinitely large circles with the points $p_1$ and $p_2$ on their perimeter and their centre on the ray. In this case, one of these circles is randomly chosen.
 \item
 For a {\bf segment}, the circle with $p_1$ and $p_2$ on its perimeter, and its centre on the midpoint of the segment is chosen.
 \end{enumerate}
 
 \subsection{Finding a point in the interior of a face}
 \label{sec:findPoints}
-A relatively difficult task proved to be that of finding a point in the interior of an arbitrary face, given two point $p_1$ and $p_2$ known to be on the boundary of the face. The following algorithm was used.
+A relatively difficult task proven to be that of finding a point in the interior of an arbitrary face, given two point $p_1$ and $p_2$ known to be on the boundary of the face. The following algorithm was used.
 
 \begin{figure}[hb]
 \includegraphics[width=0.4\textwidth]{pictures/PointInFace.png}
 \includegraphics[width=0.3\textwidth]{pictures/PointInFace2.png}
  \caption[Close up of \textit{Hemidactylus} sp.]
-   {ARE WE USING THIS SECTION AT ALL?.}
+   {The graphic shows the application of the algorithm descibed in this section to an exemplary face.}
 \end{figure}
 \begin {itemize}
 \item
-Find the point $p_m$ in the middle of $p_1$ and $p_2$. If this point is inside the face, chose this point. (WE DON'T ACTUALLY DO THIS YET)
+Find the point $p_m$ in the middle of $p_1$ and $p_2$.
 \item
-Find the line $l$ going through $p_m$ and is perpendicular to the edge between $p_1$ and $p_2$.
+Find the line $l$ that is going through $p_m$ and is perpendicular to the edge between $p_1$ and $p_2$.
 \item
-Find the segment $s$ that is the intersection of $l$ and the smallest rectangle large enough to contain all circles of the arrangement. This step is needed because a CGAL function needs an object of type segment as input. We describe this step here for the sake of completeness.
+Find the segment $s$ that is the intersection of $l$ and the smallest rectangle large enough to contain all circles of the arrangement. This step is needed because the the kind of CGAL arrangement we are using does not support lines. We describe this step here for the sake of completeness.
 \item
 Find the segment that is the intersection of the segment $s$ and the face itself.
 \item
@@ -212,38 +213,38 @@ Any point except the endpoints of this segment are inside the face. The midpoint
 
 \subsection{Finding a minimal subset of points}
 \label{sec:gurobi}
-The problem of finding a minimal subset of a set of points $\mathcal P^*$, so that at least one point in $\mathcal P$ is in the interior of each circle in $\mathcal C$, is exactly that of the set covering problem. The problem is easily stated in terms of an integer programming problem, and can thus be solved relatively efficiently with an integer programming solver, such as Gurobi.
-\subsubsection{Pseudo code }
-For every point $\rho_i \in \mathcal P^*$, let $x(\rho_i)$ be a boolean, set to 1 if the point $\rho_i$ appears in a solution and 0 otherwise. Also, for every circle $\varsigma_j \in \mathcal C$, let $\varsigma_j (\rho_i)$ be 1 if point $\rho_i$ lies in the interior of $c_j$ and 0 otherwise.
+The problem of finding a minimal subset of a set of points $\mathcal P^*$, so that at least one point in $\mathcal P$ is in the interior of each circle in $\mathcal C$, is exactly that of the set covering problem. The problem is easily stated in terms of an integer programming problem:
 
-
+For every point $\rho_i \in \mathcal P^*$, let $x(\rho_i)$ be a boolean, set to 1 if the point $\rho_i$ appears in the currently considered solution and 0 otherwise. Also, for every circle $\varsigma_j \in \mathcal C$, let $\varsigma_j (\rho_i)$ be 1 if point $\rho_i$ lies in the interior of $c_j$ and 0 otherwise.
 
 \begin{lstlisting}[mathescape]
 Minimize: $\sum\limits_{ \rho \in \mathcal P^*} x(\rho_{i}) \hspace{70pt} $
 Constraint: $\sum\limits_{ \rho \in \mathcal P^*} \varsigma_j(\rho_i) \geq 1 \hspace{40pt}$ for each $\varsigma \in \mathcal C$
 \end{lstlisting}
 
-\subsection{Refining a near-optimum through random search}
+Stated in this way, the problem can be solved relatively efficiently with an integer programming solver, such as Gurobi.
+
+\subsection{Refining a near-optimum solution through random search}
 \label{sec:rand}
 Random search is a direct search method that does not require the derivative of the function to be minimized. It is algorithmically simple, and in general terms work as follows:
 
-To minimize a function $f : \mathds{R}^n \rightarrow \mathds{R}$, start with a (potentially random)  solution $x :  \mathds{R}^n$. 
+To minimize a function $f : \mathds{R}^n \rightarrow \mathds{R}$, start with a (potentially random)  solution $x :  \mathds{R}^n$ and do the following:
 
 \begin{lstlisting}[mathescape]
-while (f(x) > 0
-	Generate a new candidate solution y, in the neighbourhood of x
+while (f(x) > 0 )
+	Generate a new candidate solution y in the neighbourhood of x
 	if f(y) < f(x)
 		replace the current solution x with y.
 \end{lstlisting}
 
-There are several candidates for choosing the objective function \emph{f}, for example the number of red delaunay circles or red voronoi edges. For this problem, we have chosen the sum the squared lengths of all red voronoi edges.
+There are several candidates for choosing the objective function \emph{f}, for example the number of red Voronoi edges. For this problem, we have chosen the sum of the squared lengths of all red voronoi edges.
 
 \section{Results}
 
 \subsection{Graphical interface}
-In order to easily specify new problems, and to visualize the process of solving the problems, a minimalistic graphical interface is used. It has methods for adding, moving and removing points. It automatically updates and draws the voronoi diagram corresponding to the set of points, and also a set of delaunay circles corresponding to the red edges in the voronoi diagram.
+In order to easily specify new problems, and to visualize the process of solving the problems, a minimalistic graphical interface is used. It has methods for adding, moving and removing points. It automatically updates and draws the Voronoi diagram corresponding to the set of points used in the current iteration of the above mentioned algorithm, and also the set of Delaunay circles corresponding to the red edges in this Voronoi diagram.
 
-Additionally, methods for saving and loading configurations were added to simplify testing and debugging.
+Additionally, methods for saving and loading configurations were added.
 
 \begin{figure}[h]
 \includegraphics[width=0.4\textwidth]{pictures/gui.png}
@@ -255,7 +256,7 @@ Additionally, methods for saving and loading configurations were added to simpli
 \subsection{Speed}
 The problem of finding a blocking set of blue points is computationally hard, since the set-cover problem is NP-hard and also by its own, assuming the conjuncture in \hyperref[ref:blocking]{2} is true. This complexity is reflected in the time it takes to solve a problem, shown in figure 4.
 
-The figure shows the average time of solving a problem, with between 7 and 12 points. The program was run on forty randomely generated problems each (not the same forty). Due to the existence of local minima in the search space, there is a small risk that a run takes unusually long time. Such statistical \emph{outliers} greatly impact the total average, and thus both a graph with and without these outlier values have been included.
+The figure shows the average time of solving a problem with between 7 and 12 points. The program was run on forty randomly generated problems for each problem size. Due to the existence of local minima in the search space explored by the random search algorithm, there is a small risk that a run takes unusually long time. Such statistical \emph{outliers} greatly impact the total average, and thus both a graph with and without these outlier values have been included.
 
 \begin{figure}[h]
 \begin{center}
@@ -270,37 +271,50 @@ The figure shows the average time of solving a problem, with between 7 and 12 po
 In all the tested problems, the number of blue points in the final solution was the same as the number of red points in the original problem.
 
 
-\subsection{Exact or Inexact Points}
-A design issue was that of finding a point in every face of the arrangement (step 4 in section  \hyperref[ref:Algorithm]{4.1}). The algorithm presented in section \hyperref[sec:findPoints]{4.3} provides satisfying results, but is high on computation.
+\subsection{Correctness of the calculated solutions}
 
-An alternative approach is to simply chose two points on the boundary of a face, and chose the middle point. Such a point will be within the face 50\% of the cases, since the boundary of the face in a restricted area is convex or concave with the same probability. 
+Inexact calculations
 
-This latter approach is computationally easy, but does not fully fulfill the requirement of the algorithm. If is not known if this fact leads to undesired behavior in some cases, for example non-optimal solutions or non-convergence. The gain in time, compared to the secure algorithm in 4.3, is shown in the graph below.
+The numbers used by our algorithm are mostly floating point numbers. While calculations involving floating point numbers are usually not totally precise, CGAL offers the possibility to perform 100% exact calculations. The disadvantage of using exact calculations everywhere is that this leads to a noticeable performance decrease. Therefore, we decided to use inexact calculations for the construction of the circles that are to be covered by our algorithm. Exact calculations are only used for finding a point in every face.
+Thus, the circles used in the algorithm are usually a little bit smaller or bigger than they should be, or aren't located exactly where they should be. It is therefore theoretically possible that a set of blue points is found, that covers all circles when it shouldn't, or vice versa. But this is not a problem, because for the Delaunay triangulation, that is later constructed using the found points and that is used to decide whether a solution to the considered problem is found, does not depend on the calculated circles and their precision. So, even if something goes wrong during circle construction, it does not affect the correctness of the returned solution.
+
+The solution retured by our program doesn't necessarily have to be correct though, because the construction of the Delaunay triangulation does also use inexact calculations. It's therefore possible that a solution returned by our program is not a real solution, or that a found solution is considered insufficient by mistake. This may, but doesn't have to mean that later, a solution using more blue points than necessary will be accepted and returned. The only way to guarantee that the returned solutions are always correct and minimal would be to do all calculations in an exact way. As this would lead to unacceptable performance and the probability of mistakes is very small, we decided not to use exact calculations everywhere.
+
+Finding a point in the interior of a face
+
+Another design issue was that of finding a point in every face of the arrangement (step 4 in section  \hyperref[ref:Algorithm]{4.1}). The algorithm presented in section \hyperref[sec:findPoints]{4.3} provides satisfying results, but is relatively complex.
+
+An alternative approach is to simply choose two points on the boundary of a face, and chose the middle point as result, without checking whether it really lies in the considered face. In fact, such a point will be within the face 50\% of the cases, since the boundary of the face in a restricted area is convex or concave with the same probability. 
+
+This latter approach is computationally easy, but does not fully fulfill the requirement of the algorithm. As explained above, it can not lead to incorrect solutions being returned by our program, but it might happen that the returned solution is not minimal. Again, this unlikely and the performance gain of using the inexact method is large, so that we decided to use this approach instead of the one explained in section \hyperref[sec:findPoints]{4.3}. But we also implemented the exact approach, so that switching over is easy. \newline 
+The gain in time is shown in the graph below.
 
 
 
 \section{Conclusions}
-The purpose of this project has been to experimentally explore the claim, that in an optimal solution |$\mathcal{B}$| = |$\mathcal{R}$|. It must be noted that this can be falsified through experimentation by finding a counter-example to the claim, but it can never be experimentally proven. During testing, no counter-examples to the claim have been found, leaving us to believe that this conjecture is in fact true.
+The purpose of this project has been to experimentally explore the claim, that in an optimal solution there are as many blue points as red points. It must be noted that this can be falsified through experimentation by finding a counter-example to the claim, but it can never be experimentally proven. During testing, no counter-examples to the claim have been found, leaving us to believe that this conjecture is in fact true.
 
 \section{Discussion}
-During the course of this project, we have used our tool to solve a large amount of problem, but with the big limitation with respect to performance. Due to the exponential complexity of this problem (shown in \hyperref[ref:speed] {figure 7}), we have been limited to problems of a relatively small size. To more fully investigate this claim, the solver would likely need to be improved.
+During the course of this project, we have used our tool to solve a large amount of problems, but with the big limitation with respect to performance. Due to the exponential complexity of this problem (shown in \hyperref[ref:speed] {figure 7}), we have been limited to problems of a relatively small size. To more fully investigate this claim, the solver would likely need to be improved.
 
-One way to do this is to more fully investigate how and when random search is effective. During our testing, a random search stage was entered when the total length of the red segments in the voronoi diagram was smaller than 300*N. This is a very course estimation, which if too large inevitably leads to a local minima, and if to small means the problem solved faster. It is also likely that using a similar but more sophisticated technique, such as tabu search, would be more effective.
+One way to do this is to more fully investigate how and when random search is effective. During our testing, a random search stage was entered when the total length of the red segments in the voronoi diagram was smaller than 300*N, where N is the number of red points. This is a very rough estimation, which if too large leads to a local minima, and if too small means the problem could be solved faster. A second parameter, the amout of randomization used, could be optimized, too. It is also likely that using a similar but more sophisticated technique, such as tabu search, would be more effective.
 
 
 \begin{itemize}
 \item
-Random search has a few things to note. Local minima is always a problem. Then two things that can be optimized, but we don't have time; first the threshhold, where we decide to start doing an RA, second the amount of randomization used. Tabu search would probably work awesome.
-\item
 Complexity of our algorithm? 
 \end{itemize}
 
+Another way to improve our solver would be to add more fast heuristics that are likely to find a solution, so that the slow but (almost) exact algorithm described in section \hyperref[sec:findPoints]{4} would be used rarely.
+
 \section{Tools}
-In this project, a set of tools and libraries were used. Most notably, the Computational Geometry Algorithms Library (CGAL) provides a vast number of efficient algorithms for different areas within computational geometry. In this project, we have had extensive use of the methods for calculating voronoi diagrams, triangulations and arrangements.
+In this project, a set of tools and libraries were used. Most notably, the Computational Geometry Algorithms Library (CGAL) provides a vast number of efficient algorithms for different areas within computational geometry. In this project, we have made extensive use of the methods for calculating Voronoi diagrams, triangulations and arrangements.
 
 The Gurobi optimzer was used for solving the integer programming problem. It provides an easy-to-use C++-API.
 
-We used git for revision control and to simplify our collaboration. The source code for the project is available at \url{https://github.com/martin-mfg/voronoi-thesis-tester}
+To easily build the simple GUI for our program, we use QT.
+
+Finally, we used git for revision control and to simplify our collaboration. The source code for the project is available at \url{https://github.com/martin-mfg/voronoi-thesis-tester}
 
 \section{references}
 \small
@@ -358,4 +372,5 @@ http://upload.wikimedia.org/wikipedia/commons/1/1f/Delaunay-Triangulation.svg
 
 \end{itemize}
 \end{document}
+
 
