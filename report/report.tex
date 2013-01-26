@@ -272,24 +272,23 @@ In all the tested problems, the number of blue points in the final solution was 
 
 
 \subsection{Correctness of the calculated solutions}
+\subsubsection{Inexact calculations}
 
-Inexact calculations
+The numbers used in the algorithm implementation are mostly floating point numbers. While calculations involving floating point numbers are usually not totally precise, the CGAL library offers the possibility to perform 100\% exact calculations, although with the disadvantage of a notable performance decrease. Thus, only step 2 of the algorithm is done with full precision.
 
-The numbers used by our algorithm are mostly floating point numbers. While calculations involving floating point numbers are usually not totally precise, CGAL offers the possibility to perform 100% exact calculations. The disadvantage of using exact calculations everywhere is that this leads to a noticeable performance decrease. Therefore, we decided to use inexact calculations for the construction of the circles that are to be covered by our algorithm. Exact calculations are only used for finding a point in every face.
-Thus, the circles used in the algorithm are usually a little bit smaller or bigger than they should be, or aren't located exactly where they should be. It is therefore theoretically possible that a set of blue points is found, that covers all circles when it shouldn't, or vice versa. But this is not a problem, because for the Delaunay triangulation, that is later constructed using the found points and that is used to decide whether a solution to the considered problem is found, does not depend on the calculated circles and their precision. So, even if something goes wrong during circle construction, it does not affect the correctness of the returned solution.
+It is theoretically possible that a set of blue points is found, that is believed to covers all circles, when it in reality does not (or vice versa). Note that the Delaunay triangulation that is later constructed using the found points does not depend on the calculated circles and their precision. It is when this Delaunay triangulation is free from red-red neighbours that the program terminates, and thus the correctness of the final solution is not affected by the inexactness of the intermediate calculation, although it is possible that more iterations are performed than what is necessary.
 
-The solution retured by our program doesn't necessarily have to be correct though, because the construction of the Delaunay triangulation does also use inexact calculations. It's therefore possible that a solution returned by our program is not a real solution, or that a found solution is considered insufficient by mistake. This may, but doesn't have to mean that later, a solution using more blue points than necessary will be accepted and returned. The only way to guarantee that the returned solutions are always correct and minimal would be to do all calculations in an exact way. As this would lead to unacceptable performance and the probability of mistakes is very small, we decided not to use exact calculations everywhere.
+The solution returned are not necessarily correct, since the construction of the Delaunay triangulation also uses inexact calculations. It is therefore possible that a solution returned by our program is in fact a false solution, or that a true solution is overlooked. This may lead to a solution using more blue points than necessary will be accepted and returned. The only way to guarantee that the returned solutions are always correct and minimal would be to do all calculations in an exact way. As exact calculations are costly, it is preferable to perform inexact calculations and in the rare cases where a non-optimal solution is found, try solving the problem again from the beginning.
 
-Finding a point in the interior of a face
+\subsubsection{Finding a point in the interior of a face}
 
-Another design issue was that of finding a point in every face of the arrangement (step 4 in section  \hyperref[ref:Algorithm]{4.1}). The algorithm presented in section \hyperref[sec:findPoints]{4.3} provides satisfying results, but is relatively complex.
+Another design issue was that of finding a point in every face of the arrangement (step 4 in section \hyperref[ref:Algorithm]{4.1}). The algorithm presented in section \hyperref[sec:findPoints]{4.3} provides satisfying results, but is relatively complex.
 
 An alternative approach is to simply choose two points on the boundary of a face, and chose the middle point as result, without checking whether it really lies in the considered face. In fact, such a point will be within the face 50\% of the cases, since the boundary of the face in a restricted area is convex or concave with the same probability. 
 
-This latter approach is computationally easy, but does not fully fulfill the requirement of the algorithm. As explained above, it can not lead to incorrect solutions being returned by our program, but it might happen that the returned solution is not minimal. Again, this unlikely and the performance gain of using the inexact method is large, so that we decided to use this approach instead of the one explained in section \hyperref[sec:findPoints]{4.3}. But we also implemented the exact approach, so that switching over is easy. \newline 
-The gain in time is shown in the graph below.
+This latter approach is computationally easy, but does not fully fulfill the requirement of the algorithm. As explained above, it can not lead to incorrect solutions being returned by our program, but it might happen that the returned solution is not minimal. Again, this is a rare phenomenon and the performance gain of using the inexact method is large, and therefore this approach is preferable. The methods were both implemented in a manner such that switching between them is easy. The gain in computation time is shown in the graph below.
 
-
+MISSING PICTURE HERE.
 
 \section{Conclusions}
 The purpose of this project has been to experimentally explore the claim, that in an optimal solution there are as many blue points as red points. It must be noted that this can be falsified through experimentation by finding a counter-example to the claim, but it can never be experimentally proven. During testing, no counter-examples to the claim have been found, leaving us to believe that this conjecture is in fact true.
@@ -297,7 +296,7 @@ The purpose of this project has been to experimentally explore the claim, that i
 \section{Discussion}
 During the course of this project, we have used our tool to solve a large amount of problems, but with the big limitation with respect to performance. Due to the exponential complexity of this problem (shown in \hyperref[ref:speed] {figure 7}), we have been limited to problems of a relatively small size. To more fully investigate this claim, the solver would likely need to be improved.
 
-One way to do this is to more fully investigate how and when random search is effective. During our testing, a random search stage was entered when the total length of the red segments in the voronoi diagram was smaller than 300*N, where N is the number of red points. This is a very rough estimation, which if too large leads to a local minima, and if too small means the problem could be solved faster. A second parameter, the amout of randomization used, could be optimized, too. It is also likely that using a similar but more sophisticated technique, such as tabu search, would be more effective.
+One way to do this is to more fully investigate how and when random search is effective. During our testing, a random search stage was entered when the total length of the red segments in the voronoi diagram was smaller than 300*N, where N is the number of red points. This is a very rough estimation, which if too large leads to a local minima, and if too small means the problem could be solved faster. A second parameter, the amount of randomization used, could also be optimized. It is likely that using a similar but more sophisticated technique, such as tabu search, would be more effective.
 
 
 \begin{itemize}
