@@ -82,8 +82,11 @@
 
 \begin{figure}
 \section*{\large Abstract}
-....
+Given a set $\mathcal{R}$ of N red points, we consider a set  $\mathcal{B}$ of blue points to be a \emph{solution}, if in the Voronoi diagram for  $\mathcal{R}\cup\mathcal{B}$, no two red points have coinciding delimiters. In this paper we experimentally investigate the claim that an optimal solution always needs as many blue points as there are red points. Although this claim has not been proven, we have found no counter-examples to this claim, further strengthening our belief that the claim is in fact true.
 \end{figure}
+\newpage
+
+\tableofcontents
 \newpage
 
 \section{Introduction}
@@ -253,6 +256,26 @@ Additionally, methods for saving and loading configurations were added.
    {An example of a problem configuration (left) and a found solution to the same problem (right).}
 \end{figure}
 
+
+\subsection{Command line parameters}
+
+It's also possible to start the program without the GUI. To do so, either the name of an existing file or "random" along with an integer has to be provided as command line parameter. If the first command line parameter is "random", no GUI is displayed, and a random problem, that is, a set containing the provided number of randomly placed red points, is generated and solved. Afterwards, the number of red points in the problem, as well as the number of blue points used to solve the generated problem is displayed along with the runtime of the program in milliseconds: \newline
+\texttt{ \newline
+user@computer:~/path/\textdollar{} ./gui\_demo random 7 \newline
+7, 7, 4153 \newline
+user@computer:~/path/\textdollar{}
+}
+\newline
+CHANGE THE NAME OF THE PROGRAM
+\newline
+If a filename is provided, the problem saved in the named file is solved and the same information as above is printed.
+
+\subsection{Scripts}
+
+The GUI-less mode was designed to be used by scripts, such as the provided "randomtest" and "reruntest" scripts. If the problem could not be solved within 5 minutes, it is stored in the subfolder "testing". The generated problem is always also stored in the file "latest.cnfg". ACTUALLY DO THIS! AUTOMATION IS RATHER USELESS WITHOUT THIS
+
+The script "randomtest" is used to solve a number of random problems of different sizes. The script "reruntest" runs the solver again for every problem stored in the "testing" subfolder.
+
 \subsection{Speed}
 The problem of finding a blocking set of blue points is computationally hard, since the set-cover problem is NP-hard and also by its own, assuming the conjuncture in \hyperref[ref:blocking]{2} is true. This complexity is reflected in the time it takes to solve a problem, shown in figure 4.
 
@@ -290,8 +313,9 @@ This latter approach is computationally easy, but does not fully fulfill the req
 
 MISSING PICTURE HERE.
 
+
 \section{Conclusions}
-The purpose of this project has been to experimentally explore the claim, that in an optimal solution there are as many blue points as red points. It must be noted that this can be falsified through experimentation by finding a counter-example to the claim, but it can never be experimentally proven. During testing, no counter-examples to the claim have been found, leaving us to believe that this conjecture is in fact true.
+The purpose of this project has been to experimentally explore the claim, that in an optimal solution there are as many blue points as red points, except for the case where all red points lie in a row. It must be noted that this can be falsified through experimentation by finding a counter-example to the claim, but it can never be experimentally proven. During testing, no counter-examples to the claim have been found, leaving us to believe that this conjecture is in fact true.
 
 \section{Discussion}
 During the course of this project, we have used our tool to solve a large amount of problems, but with the big limitation with respect to performance. Due to the exponential complexity of this problem (shown in \hyperref[ref:speed] {figure 7}), we have been limited to problems of a relatively small size. To more fully investigate this claim, the solver would likely need to be improved.
@@ -311,7 +335,7 @@ In this project, a set of tools and libraries were used. Most notably, the Compu
 
 The Gurobi optimzer was used for solving the integer programming problem. It provides an easy-to-use C++-API.
 
-To easily build the simple GUI for our program, we use QT.
+To easily build the simple GUI for our program, we used QT.
 
 Finally, we used git for revision control and to simplify our collaboration. The source code for the project is available at \url{https://github.com/martin-mfg/voronoi-thesis-tester}
 
