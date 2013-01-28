@@ -294,7 +294,6 @@ class Geometry {
 				return -1;
 			}
 				if (minimum == 0){
-	//				cout << "Solution found!" << endl;
 					return 0;
 				}
 				for (int j=0;j<gi;j++)	{		

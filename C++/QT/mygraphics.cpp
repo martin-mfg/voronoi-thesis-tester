@@ -47,15 +47,14 @@ MyGraphics::MyGraphics (const char * argv, QWidget* obj) :	QWidget(obj), geometr
 						break;
 					update();
 				} else {
-				  if (timeout())
-				    exit(0);
-				  else
+				  if (timeout()){
+						obj = -1;
+						break;
+				  } else
 					obj=geometry.solver(0);
 				}
 			}   
-			if(geometry.numRedPoints() < geometry.numBluePoints()) {
-				geometry.clearPoints();
-
+			if(geometry.numRedPoints() != geometry.numBluePoints()) {
 			if (obj==-1){
 				std::string s;
 				std::stringstream out;
@@ -67,7 +66,6 @@ MyGraphics::MyGraphics (const char * argv, QWidget* obj) :	QWidget(obj), geometr
 				geometry.remove_blue_points();
 				geometry.saveFile(file.c_str());
 			}
-				goto repeat;
 			}
 
 			printtime(geometry.numRedPoints(), geometry.numBluePoints(), start);
