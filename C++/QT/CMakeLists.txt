@@ -1,4 +1,4 @@
-project(gui)
+project(separator)
 
 cmake_minimum_required(VERSION 2.6.2)
 if("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" VERSION_GREATER 2.6)
@@ -34,10 +34,10 @@ if ( CGAL_FOUND )
     include_directories(${CMAKE_BINARY_DIR} ${QT4_INCLUDE_DIR} /opt/gurobi501/linux32/include)
     INCLUDE( ${QT_USE_FILE} )
 
-    add_executable (gui_demo moc_mygraphics.cxx mygraphics.cpp main.cpp solver/solver.cpp)
+    add_executable (separator moc_mygraphics.cxx mygraphics.cpp main.cpp solver/solver.cpp)
 
     # Link the executable to CGAL and third-party libraries
-    target_link_libraries(gui_demo ${QT4_LIBRARIES} ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} gurobi_c++ gurobi50) 
+    target_link_libraries(separator ${QT4_LIBRARIES} ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} gurobi_c++ gurobi50) 
   else()
     message(STATUS "NOTICE: This demo requires Qt4 and the CGAL Qt4 library, and will not be compiled.")
   endif()
