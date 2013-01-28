@@ -82,7 +82,7 @@
 
 \begin{figure}
 \section*{\large Abstract}
-Given a set $\mathcal{R}$ of N red points, we consider a set  $\mathcal{B}$ of blue points to be a \emph{solution}, if in the Voronoi diagram for  $\mathcal{R}\cup\mathcal{B}$, no two red points have coinciding delimiters. In this paper we experimentally investigate the claim that an optimal solution always needs as many blue points as there are red points. Although this claim has not been proven, we have found no counter-examples to this claim, further strengthening our belief that the claim is in fact true.
+Given a set $\mathcal{R}$ of N red points, we consider a set  $\mathcal{B}$ of blue points to be a \emph{solution}, if in the Voronoi diagram for  $\mathcal{R}\cup\mathcal{B}$, no two red points have coinciding delimiters. In this paper we experimentally investigate the claim that an minimal solution always needs as many blue points as there are red points. Although this claim has not been proven, we have found no counter-examples to this claim, further strengthening our belief that the claim is in fact true.
 \end{figure}
 \newpage
 
@@ -136,7 +136,7 @@ The subset $\mathcal B_2$ = \{\{1,2\}, \{2,3\}, \{2,5\}\} has the union \{1,2,3,
 A minimal solution is $\mathcal B_3$ = \{\{1,2\}, \{3,5\}\}. \newline
 The set cover problem is known to be NP-complete.\hyperref[ref:karp]{4}
 \section{Problem formulation}
-Given a set $\mathcal{R}$ of red points, find a set $\mathcal{B}$ of blue points such that in the Voronoi diagram of $\mathcal{R} \cup \mathcal{B}$, no two regions corresponding to points in $\mathcal{R}$ are incident to each other. For the Delaunay triangulation of $\mathcal{R} \cup \mathcal{B}$, this means that there is no edge connecting two red points. The conjecture that |$\mathcal{B}$| = |$\mathcal{R}$| is needed in an optimal solution is to be experimentally explored.
+Given a set $\mathcal{R}$ of red points, find a set $\mathcal{B}$ of blue points such that in the Voronoi diagram of $\mathcal{R} \cup \mathcal{B}$, no two regions corresponding to points in $\mathcal{R}$ are incident to each other. For the Delaunay triangulation of $\mathcal{R} \cup \mathcal{B}$, this means that there is no edge connecting two red points. The conjecture that |$\mathcal{B}$| = |$\mathcal{R}$| is sufficient in an optimal solution is to be experimentally explored.
 
 
 \section{Background}
@@ -161,18 +161,18 @@ Although not yet shown, the problem is suspected to be NP-hard \hyperref[ref:blo
 \label{ref:Algorithm}
 \begin{enumerate}
 \item
-For the set $\mathcal P$ of points (both red and blue) find the Delaunay triangulation.
+For the set $\mathcal P$ of points (both red and blue) find the Delaunay triangulation and the Voronoi diagram.
 \item
 \label{alg:part2}
-For each edge connecting two red points in the triangulation, \hyperref[sec:findCircle]{find a circle} with the two points on its perimeter and the circle's centre on the edge and add these to the (initially empty) set of circles $\mathcal C$.
+For each edge in the Delaunay triangulation that connects two red points, \hyperref[sec:findCircle]{find a circle} with these two points on its perimeter and the circle's centre on the corresponding Voronoi edge and add these to the (initially empty) set of circles $\mathcal C$.
 \item
 Calculate the \hyperref[sec:arrangement]{arrangement} $\mathcal A$ of the circles $\mathcal C$.
 \item
 \hyperref[sec:findPoints]{Find a set of points} $\mathcal P^*$, so that for every face in the arrangement $\mathcal A$, exactly one point is located in the interior. For every point $\rho  \in \mathcal P^*$ and every circle $\varsigma$ in $\mathcal C$, determine whether $\rho$ is in the interior of $\varsigma$.
 \item
-\hyperref[sec:gurobi]{Find a minimum subset} $\mathcal P^**$ of $\mathcal P^*$, so that every circle in $\mathcal C$ is covered by at least one point.
+\hyperref[sec:gurobi]{Find a minimum subset} $\mathcal P^{**}$ of $\mathcal P^*$, so that every circle in $\mathcal C$ is covered by at least one point.
 \item
-Set $\mathcal P$ to $\mathcal P^** \cup Red(\mathcal P )$, where  $Red(\mathcal P )$ denotes the set of red points in $\mathcal P$. Calculate the Delaunay triangulation for $\mathcal P$.
+Set $\mathcal P$ to $\mathcal P^{**} \cup Red(\mathcal P )$, where  $Red(\mathcal P )$ denotes the set of red points in $\mathcal P$. Calculate the Delaunay triangulation for $\mathcal P$.
 \item
 For every red edge still in the triangulation, calculate the length of its dual in the Voronoi graph. If no red edges exist in the triangulation, terminate. If the sum of the calculated lengths is sufficiently small, use \hyperref[sec:rand]{random search } to find an optimal solution. Otherwise, restart from \hyperref[alg:part2]{2}.
 \end{enumerate}
@@ -186,7 +186,7 @@ The approach for choosing a circle depends on which type of Voronoi edge is to b
 \item
 For a {\bf line}, the smallest possible circle is chosen. This is the circle with its centre in the middle of $p_1$ and $p_2$, and a radius such that $p_1$ and $p_2$ are on the perimeter of the circle. A line only occurs in the Voronoi diagram in the trivial case where all points lie in a straight line.
 \item
-A {\bf ray} in the Voronoi diagram is always associated with two points on the convex hull of the Delaunay triangulation. There are infinitely large circles with the points $p_1$ and $p_2$ on their perimeter and their centre on the ray. In this case, one of these circles is randomly chosen.
+A {\bf ray} in the Voronoi diagram is always associated with two points on the convex hull of the Delaunay triangulation. There are arbitrarily large circles with the points $p_1$ and $p_2$ on their perimeter and their centre on the ray. In this case, one of these circles is randomly chosen.
 \item
 For a {\bf segment}, the circle with $p_1$ and $p_2$ on its perimeter, and its centre on the midpoint of the segment is chosen.
 \end{enumerate}
