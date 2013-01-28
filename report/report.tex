@@ -207,7 +207,7 @@ Find the point $p_m$ in the middle of $p_1$ and $p_2$.
 \item
 Find the line $l$ that is going through $p_m$ and is perpendicular to the edge between $p_1$ and $p_2$.
 \item
-Find the segment $s$ that is the intersection of $l$ and the smallest rectangle large enough to contain all circles of the arrangement. This step is needed because the the kind of CGAL arrangement we are using does not support lines. We describe this step here for the sake of completeness.
+Find the segment $s$ that is the intersection of $l$ and the smallest rectangle large enough to contain all circles of the arrangement. This step is needed because the the kind of CGAL arrangement used does not support lines. This step is described here only for the sake of completeness.
 \item
 Find the segment that is the intersection of the segment $s$ and the face itself.
 \item
@@ -259,22 +259,25 @@ Additionally, methods for saving and loading configurations were added.
 
 \subsection{Command line parameters}
 
-It's also possible to start the program without the GUI. To do so, either the name of an existing file or "random" along with an integer has to be provided as command line parameter. If the first command line parameter is "random", no GUI is displayed, and a random problem, that is, a set containing the provided number of randomly placed red points, is generated and solved. Afterwards, the number of red points in the problem, as well as the number of blue points used to solve the generated problem is displayed along with the runtime of the program in milliseconds: \newline
+It's also possible to start the program without the GUI. To do so, either the name of an existing file or "random" followed by an integer has to be provided as command line parameter. If the first command line parameter is "random", no GUI is displayed, and a random problem, that is, a set containing the provided number of randomly placed red points, is generated and solved. Afterwards, the number of red points in the problem, as well as the number of blue points used to solve the generated problem is displayed along with the runtime of the program in milliseconds:
+
 \texttt{ \newline
-user@computer:~/path/\textdollar{} ./gui\_demo random 7 \newline
+user@computer:~/path/\textdollar{} ./separator random 7 \newline
 7, 7, 4153 \newline
 user@computer:~/path/\textdollar{}
 }
-\newline
-CHANGE THE NAME OF THE PROGRAM
-\newline
-If a filename is provided, the problem saved in the named file is solved and the same information as above is printed.
 
-\subsection{Scripts}
 
-The GUI-less mode was designed to be used by scripts, such as the provided "randomtest" and "reruntest" scripts. If the problem could not be solved within 5 minutes, it is stored in the subfolder "testing". The generated problem is always also stored in the file "latest.cnfg". ACTUALLY DO THIS! AUTOMATION IS RATHER USELESS WITHOUT THIS
+If a filename is provided, the problem saved in the named file is solved (without GUI) and the same information as above is printed.
 
-The script "randomtest" is used to solve a number of random problems of different sizes. The script "reruntest" runs the solver again for every problem stored in the "testing" subfolder.
+\subsection{Automated testing and debugging}
+The GUI-less mode was designed to be used for automatation, such as the provided by the \texttt{randomtest} and \texttt{reruntes}" scripts.
+
+The \texttt{randomtest} script will randomized problems of a specified size, a certain number of times (this is specified in the script). If a problem could not be solved within 5 minutes, it is considered to have timed out, and is stored in the subfolder \emph{testing}.
+
+The script \texttt{reruntest} will run all tests in the \emph{testing} subfolder again, and remove them after completion. If a test again times out, a new file will be created in the same folder. This is to ensure that a correct solution is found for all problems.
+
+When running with GUI enabled, the last used configuration is always solved in the file \emph{latest.cnfg}. This means that in case of unexpected behavior, for example a crash, the configuration on which it occured can always be recovered and examined.
 
 \subsection{Speed}
 The problem of finding a blocking set of blue points is computationally hard, since the set-cover problem is NP-hard and also by its own, assuming the conjuncture in \hyperref[ref:blocking]{2} is true. This complexity is reflected in the time it takes to solve a problem, shown in figure 4.
@@ -309,9 +312,9 @@ Another design issue was that of finding a point in every face of the arrangemen
 
 An alternative approach is to simply choose two points on the boundary of a face, and chose the middle point as result, without checking whether it really lies in the considered face. In fact, such a point will be within the face 50\% of the cases, since the boundary of the face in a restricted area is convex or concave with the same probability. 
 
-This latter approach is computationally easy, but does not fully fulfill the requirement of the algorithm. As explained above, it can not lead to incorrect solutions being returned by our program, but it might happen that the returned solution is not minimal. Again, this is a rare phenomenon and the performance gain of using the inexact method is large, and therefore this approach is preferable. The methods were both implemented in a manner such that switching between them is easy. The gain in computation time is shown in the graph below.
+This latter approach is computationally easy, but does not fully fulfill the requirement of the algorithm. As explained above, it can not lead to incorrect solutions being returned by our program, but it might happen that the returned solution is not minimal. Again, this is a rare phenomenon and the performance gain of using the inexact method is large, and therefore this approach is preferable. The methods were both implemented in a manner such that switching between them is easy.
 
-MISSING PICTURE HERE.
+The former approach is slower to the extent that a comparison in speed is not possible, other than for very small problems (up to five red points). For bigger problems, a large proportion of tests time out making automated testing cumbersome.
 
 
 \section{Conclusions}
@@ -321,12 +324,6 @@ The purpose of this project has been to experimentally explore the claim, that i
 During the course of this project, we have used our tool to solve a large amount of problems, but with the big limitation with respect to performance. Due to the exponential complexity of this problem (shown in \hyperref[ref:speed] {figure 7}), we have been limited to problems of a relatively small size. To more fully investigate this claim, the solver would likely need to be improved.
 
 One way to do this is to more fully investigate how and when random search is effective. During our testing, a random search stage was entered when the total length of the red segments in the voronoi diagram was smaller than 300*N, where N is the number of red points. This is a very rough estimation, which if too large leads to a local minima, and if too small means the problem could be solved faster. A second parameter, the amount of randomization used, could also be optimized. It is likely that using a similar but more sophisticated technique, such as tabu search, would be more effective.
-
-
-\begin{itemize}
-\item
-Complexity of our algorithm? 
-\end{itemize}
 
 Another way to improve our solver would be to add more fast heuristics that are likely to find a solution, so that the slow but (almost) exact algorithm described in section \hyperref[sec:findPoints]{4} would be used rarely.
 
