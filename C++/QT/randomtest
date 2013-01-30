@@ -1,18 +1,18 @@
 #!/bin/bash
-for x in {1..50}
+for x in {1..120}
 do
-	./gui_demo random 5
+	./separator random 8
 done
-for x in {1..50}
+for x in {1..120}
 do
-	./gui_demo random 6
+	./separator random 9
 done
-for x in {1..50}
+for x in {1..120}
 do
-	./gui_demo random 7
+	./separator random 10
 done
-for x in {1..50}
+for x in {1..120}
 do
-	./gui_demo random 7
+	./separator random 11
 done
 

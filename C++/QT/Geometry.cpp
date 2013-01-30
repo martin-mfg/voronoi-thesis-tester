@@ -11,6 +11,8 @@ using namespace std;
 
 class Geometry {
 	private:
+		int numStep1Iterations;
+		int numStep2Iterations;
 		double gx[N_POINTS], gy[N_POINTS];	//x- and y-coordinates
 		QColor gc[N_POINTS];//color of the point
 		int gi;	//Number of points
@@ -106,6 +108,14 @@ class Geometry {
 					break;
 				}
 			}
+		}
+
+		int getNS1I () {
+			return numStep1Iterations;
+		}
+
+		int getNS2I () {
+			return numStep2Iterations;
 		}
 
 		int current_color;
@@ -286,6 +296,7 @@ class Geometry {
 			long mtime, seconds, useconds;
 			timeval s;
 			while (minimum){
+			numStep2Iterations++;
 			gettimeofday(&s,NULL);
 			seconds  = s.tv_sec  - t.tv_sec;
 			mtime = ((seconds) * 1000 + useconds/1000.0) + 0.5;
@@ -336,6 +347,7 @@ class Geometry {
 			update();
 			vector<PointInCircles>::iterator it;
 			while( circles.size() > 0 ) {
+				numStep1Iterations++;
 				//add circles,
 				//calculate candidate blue points
 				carr.addCircles( circles );

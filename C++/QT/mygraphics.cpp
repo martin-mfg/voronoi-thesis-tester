@@ -17,7 +17,7 @@ bool timeout(){
     return false;
 }
 
-void printtime(int numRed, int numBlue, timeval start){
+void printtime(int numRed, int numBlue, timeval start, int NS1I, int NS2I){
   long mtime, seconds, useconds;    
   timeval end;
   gettimeofday(&end,NULL);
@@ -25,7 +25,7 @@ void printtime(int numRed, int numBlue, timeval start){
   useconds = end.tv_usec - start.tv_usec;
   mtime = ((seconds) * 1000 + useconds/1000.0) + 0.5;
   
-  cout << numRed << ", " << numBlue << ", " << mtime << endl;
+  cout << numRed << ", " << numBlue << ", " << mtime << ", " << NS1I << ", " << NS2I << endl;
   
 }
 
@@ -33,10 +33,11 @@ void printtime(int numRed, int numBlue, timeval start){
 
 MyGraphics::MyGraphics (const char * argv, QWidget* obj) :	QWidget(obj), geometry(WIDTH,HEIGHT){
 	gettimeofday(&start,NULL);	
+
 	if ( strlen(argv) > 0 ){
 	repeat:
-		geometry.readFile(argv);
-
+			geometry.readFile(argv);
+			geometry.saveFile("latest.cnfg");
 
 			double obj=-1;
 			while (obj){
@@ -62,11 +63,16 @@ MyGraphics::MyGraphics (const char * argv, QWidget* obj) :	QWidget(obj), geometr
 				string file = "testing/";
 				file += s;
 				file += ".cnfg";
+				printtime(geometry.numRedPoints(), geometry.numBluePoints(), start,
+						geometry.getNS1I(), geometry.getNS2I());
 				geometry.remove_blue_points();
 				geometry.saveFile(file.c_str());
-			}
+			} else {
+			printtime(geometry.numRedPoints(), geometry.numBluePoints(), start,
+						geometry.getNS1I(), geometry.getNS2I());
+}
 
-			printtime(geometry.numRedPoints(), geometry.numBluePoints(), start);
+
 			exit(0); // Makes it easier to take time with: time ./gui_demo
 	}
 }

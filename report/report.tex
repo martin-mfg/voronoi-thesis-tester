@@ -277,7 +277,7 @@ The \texttt{randomtest} script will randomized problems of a specified size, a c
 
 The script \texttt{reruntest} will run all tests in the \emph{testing} subfolder again, and remove them after completion. If a test again times out, a new file will be created in the same folder. This is to ensure that a correct solution is found for all problems.
 
-When running with GUI enabled, the last used configuration is always solved in the file \emph{latest.cnfg}. This means that in case of unexpected behavior, for example a crash, the configuration on which it occured can always be recovered and examined.
+When running with GUI enabled, the last used configuration is always saved in the file \emph{latest.cnfg}. This means that in case of unexpected behavior, for example a crash, the configuration on which it occured can always be recovered and examined.
 
 \subsection{Speed}
 The problem of finding a blocking set of blue points is computationally hard, since the set-cover problem is NP-hard and also by its own, assuming the conjuncture in \hyperref[ref:blocking]{2} is true. This complexity is reflected in the time it takes to solve a problem, shown in figure 4.
