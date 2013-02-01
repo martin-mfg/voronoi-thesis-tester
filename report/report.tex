@@ -280,22 +280,66 @@ The script \texttt{reruntest} will run all tests in the \emph{testing} subfolder
 When running with GUI enabled, the last used configuration is always saved in the file \emph{latest.cnfg}. This means that in case of unexpected behavior, for example a crash, the configuration on which it occured can always be recovered and examined.
 
 \subsection{Speed}
-The problem of finding a blocking set of blue points is computationally hard, since the set-cover problem is NP-hard and also by its own, assuming the conjuncture in \hyperref[ref:blocking]{2} is true. This complexity is reflected in the time it takes to solve a problem, shown in figure 4.
+\label{speed}
+The problem of finding a blocking set of blue points is computationally hard since the set-cover problem is NP-hard, but also by its own, assuming the conjuncture in \hyperref[ref:blocking]{2} is true. This complexity is reflected in the time it takes to solve a problem, shown in figure 4.
 
-The figure shows the average time of solving a problem with between 7 and 12 points. The program was run on forty randomly generated problems for each problem size. Due to the existence of local minima in the search space explored by the random search algorithm, there is a small risk that a run takes unusually long time. Such statistical \emph{outliers} greatly impact the total average, and thus both a graph with and without these outlier values have been included.
+The figure shows the average and median time of solving a problem with between 7 and 12 points. Due to the existence of local minima in the search space explored by the random search algorithm, there is a small risk that a run takes unusually long time. Such statistical \emph{outliers} can greatly impact the total average, but do not impact the median value. Thus both the average and median execution time is shown in the graph below.
 
 \begin{figure}[h]
 \begin{center}
 \label{ref:speed}
 \includegraphics[width=0.8\textwidth]{pictures/speedStats.png}
  \caption[Close up of \textit{Hemidactylus} sp.]
-   {Graph showing average time to find a solution, for problems of different size. The average is based on forty runs, and the results are shown both with and without outlier values.}
+   {Graph showing average time to find a solution, for problems of different size. The average is based on 120 runs, and the results are shown both with and without outlier values.}
 \end{center}
 \end{figure}
 
 
-In all the tested problems, the number of blue points in the final solution was the same as the number of red points in the original problem.
+The graph is based on 120 randomly generated problems, for each problem size, excluding the runs that ended with a time out. The execution time was measured on a machine with an Intel Core 2 Duo CPU 2.00GHz and with 2Gb of RAM storage.
 
+\subsection{Timeout and non-optimal solutions}
+During solving, there is a risk of a timeout occuring or that a solution is found that is believed not to be optimal (more blue points than red points). In the statistics shown \hyperref[sec:speed]{above}, runs that ended with a timeout have been excluded as the impact on time is too large (a timeout occurs after 300 seconds). In total, the number of timeouts and non-optimal solutions were
+
+\begin{figure}[h]
+\begin{center}
+\label{ref:speed}
+\includegraphics[width=0.8\textwidth]{pictures/timeouts.png}
+ \caption[Close up of \textit{Hemidactylus} sp.]
+   {Graph showing number of timeouts and non-optimal solutions. The result is based on 120 runs.}
+\end{center}
+\end{figure}
+
+It can be seen that the number of non-optimal solution is either relatively constant or slowly increasing. The phenomenon is uncommon (not more than 6\% in the statistics above), thus a solution to the problem is to simply resolve the problem automatically, if a non-optimal solution is detected. This is indeed the approach generally used in this project, although this functionality was disabled in order to find out the frequency of the problem.
+
+The number of timeouts on the other hand seems to be increasing exponentially. A timeout can occur in two different ways; either the algorithm gets stuck in the first phase, or the second stage (where second stage is randomized search). To get some insight in this matter, the number of iterations in phase 1 and phase 2 where measured.
+
+
+\begin{figure}[h]
+\begin{center}
+\label{ref:speed}
+\includegraphics[width=0.45\textwidth]{pictures/phase1iterations.png}
+ \caption[Close up of \textit{Hemidactylus} sp.]
+   {The average number of iterations in phase 1.}
+\end{center}
+\end{figure}
+
+One important conclusion is that the average number of iterations in phase 1 is increasing very slowly. This means that relatively few iterations are needed until a near-optimal solution is found, even for quite difficult problems. This low number indicates that phase 1 is not the cause of timeouts, and in fact, only one (1) timeout during testing occurred because of the algorithm being stuck in the first phase (problem had 9 points, 51 iterations in phase 1 and never entered phase 2). This leads us to believe that timeouts occur in phase 2, which is vindicated by the following graph
+
+
+\begin{figure}[h]
+\begin{center}
+\label{ref:speed}
+\includegraphics[width=0.45\textwidth]{pictures/phase2iterations.png}
+ \caption[Close up of \textit{Hemidactylus} sp.]
+   {Logarithmic scale graph showing the average and median number of iterations in phase 2, and the average of iterations before a timeout.}
+\end{center}
+\end{figure}
+
+It can be seen that the median value is always much lower than the average. From this we assume that in the general case only a low number of iterations are needed until an optimal solution is found, but occasionally solutions are found after a long time of search. These singular cases increase greatly increase the average, but the median value is not affected as much.
+
+This assumption is further strenghtened by the number of average number of iterations in the cases where a timeout occurred. This number is much higher than the average, and is presumably just bounded by the timeout time (300 seconds). It is likely that in most cases, no solution would be found no matter how long the randomized search phase would be.
+
+This means that there are some near-optimal solutions that do not lie in the neighbourhood of a true optimal solution, or that the landscape between the two is irregular making the optimal solution difficult or impossible to reach with a simple randomized search. One solution could be to use more sophisticated search algorithms, such as tabu search or a genetic algorithm. In this case however, we believe that a better solution could be to try to detect when the algorithm cannot terminate. The statistics show that the median number of iterations is relatively low in the cases where an optimal solution is found (i.e. when a solution is found, it is found quickly). Thus if a solution is not found within an estimated number of iterations (for example a constant factor higher than a known median value), the algorithm could go back to phase 1, and find a new near-optimal solution which might or might not be closer to an optimum.
 
 \subsection{Correctness of the calculated solutions}
 \subsubsection{Inexact calculations}
