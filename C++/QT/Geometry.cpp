@@ -32,30 +32,11 @@ class Geometry {
 			}
 		}
 	
-		void calculateEdges() {
+		void calculateEdgesAndCircles() {
 			vector <Point> red_points;
 			vector <Point> blue_points;
 
 
-			for (int i=0;i<gi;i++) {
-				if( getColor(i) == RED ) {
-					red_points.push_back(Point(gx[i], gy[i]));
-				} else {
-					blue_points.push_back(Point(gx[i], gy[i]));
-				}
-			}
-
-			voronoi.set_red_points(red_points);//add red points to the diagram
-			voronoi.set_blue_points(blue_points);//add blue points to the diagram
-			voronoi.update();
-			edges = voronoi.get_voronoi_edges();
-		}
-
-		void calculateCircles() {
-			vector <Point> red_points;
-			vector <Point> blue_points;
-
-			VoronoiDiagram voronoi;	//create a VoronoiDiagram object
 			for (int i=0;i<gi;i++) {
 				if( getColor(i) == RED ) {
 					red_points.push_back(Point(gx[i], gy[i]));
@@ -68,6 +49,7 @@ class Geometry {
 			voronoi.set_blue_points(blue_points);//add blue points to the diagram
 			voronoi.update();
 			circles = voronoi.get_new_circles();
+			edges = voronoi.get_voronoi_edges();
 		}
 
 		// crop returns NULL if the edge is completely outside the bounding box!
@@ -95,8 +77,7 @@ class Geometry {
 		}
 		
 		void update() {
-			calculateCircles();
-			calculateEdges();
+			calculateEdgesAndCircles();
 		}
 	public:
 		
