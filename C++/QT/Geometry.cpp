@@ -73,19 +73,20 @@ class Geometry {
 		// crop returns NULL if the edge is completely outside the bounding box!
 		const Segment * crop( ColoredEdge edge ) {
 			CGAL::Object segment_obj;
+			Converter_to_normal conv;
 			
-			const Segment * s=CGAL::object_cast<Segment>( & (edge.edge) );
+			const CircleArr_Segment * s=CGAL::object_cast<CircleArr_Segment>( & (edge.edge) );
 			if (s) { 
-				segment_obj = CGAL::intersection(*s,bounding_box); 
+				segment_obj = CGAL::intersection( conv( *s ),bounding_box); 
 			}
 			else {
-				const Ray * r=CGAL::object_cast<Ray>( & (edge.edge) );
+				const Circle_Ray * r=CGAL::object_cast<Circle_Ray>( & (edge.edge) );
 				if (r) { 
-					segment_obj = CGAL::intersection(*r,bounding_box); 
+					segment_obj = CGAL::intersection( conv( *r ),bounding_box); 
 				}
 				else { 
-					const Line * l = CGAL::object_cast<Line>( & (edge.edge) ); 
-					segment_obj = CGAL::intersection( *l ,bounding_box); 
+					const CircleArr_Line * l = CGAL::object_cast<CircleArr_Line>( & (edge.edge) ); 
+					segment_obj = CGAL::intersection( conv( *l ) ,bounding_box); 
 				}
 			}
 			

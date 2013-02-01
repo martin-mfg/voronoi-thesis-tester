@@ -22,9 +22,6 @@ typedef K::Iso_rectangle_2 Rectangle;
 typedef K::Segment_2 Segment;
 typedef K::Ray_2 Ray;
 typedef K::Line_2 Line;
-typedef CGAL::Delaunay_triangulation_2<K>  Triangulation;
-typedef Triangulation::Edge_iterator  Edge_iterator;
-typedef Triangulation::Vertex_iterator  Vertex_iterator;
 typedef CGAL::Triangle_2<K> 	Triangle; 
 typedef CGAL::Circle_2<K> Circle;
 
@@ -38,6 +35,8 @@ typedef Circle_Kernel::Point_2 CircleArr_Point;
 typedef Circle_Kernel::Line_2 CircleArr_Line;
 typedef Circle_Kernel::Iso_rectangle_2 CircleArr_Rectangle;
 typedef Circle_Kernel::Segment_2 CircleArr_Segment;
+typedef CGAL::Delaunay_triangulation_2<Circle_Kernel>  Circle_Triangulation;
+typedef Circle_Kernel::Ray_2 Circle_Ray;
 
 typedef CGAL::Cartesian_converter<K,Circle_Kernel> Converter_to_circle;
 typedef CGAL::Cartesian_converter<Circle_Kernel,K> Converter_to_normal;
