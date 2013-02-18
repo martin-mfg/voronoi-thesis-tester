@@ -114,7 +114,7 @@
 
 \begin{figure}
 \section*{\large Abstract}
-Given a set $\mathcal{R}$ of N red points, we consider a set  $\mathcal{B}$ of blue points to be a \emph{solution} if in the Voronoi diagram for  $\mathcal{R}\cup\mathcal{B}$, no two red points have coinciding delimiters. In this paper we experimentally investigate the claim that an minimal solution always needs as many blue points as there are red points. Although this claim has not been proven, we have found no counter-examples to this claim, further strengthening our belief that the claim is in fact true.
+Given a set $\mathcal{R}$ of N red points, we consider a set  $\mathcal{B}$ of blue points to be a \emph{solution} if in the Voronoi diagram for  $\mathcal{R}\cup\mathcal{B}$, no two red points have coinciding delimiters. In this paper we experimentally investigate the claim that a minimal solution always needs as many blue points as there are red points. Although this claim has not been proven, we have found no counterexamples to this claim, further strengthening our belief that the claim is in fact true.
 \end{figure}
 \newpage
 
@@ -158,7 +158,7 @@ A triangulation of a set of points (left), the corresponding Voronoi diagram (mi
 Given a set of planar curves, the arrangement is the subdivision of the plane into zero-dimensional, one-dimensional and two-dimensional cells, called \emph{vertices, edges} and \emph{faces} respectively, induced by the given curves. \hyperref[ref:cgal]{1}
 
 \subsection{The Set Cover Problem}
-Given a set $\mathcal A$ of sets of numbers, the set cover problem is the problem of finding a minimal subset $\mathcal B$ of $\mathcal A$, so that the union of the sets in $\mathcal B$ is equal to the union of all elements of $\mathcal A$.
+Given a set $\mathcal A$ of \emph{sets} of numbers, the set cover problem is the problem of finding a minimal subset $\mathcal B$ of $\mathcal A$, so that the union of the sets in $\mathcal B$ is equal to the union of all elements of $\mathcal A$.
 
 \subsubsection*{Example}
 Let $\mathcal A$ =  \{\{1,2\}, \{2,3\}, \{2,5\}, \{3,5\}\}. The union of all sets of $\mathcal A$ is \{1,2,3,5\}. \newline
@@ -172,7 +172,7 @@ Given a set $\mathcal{R}$ of red points, find a set $\mathcal{B}$ of blue points
 
 \section{Background}
 \subsection{Upper and lower bounds}
-Given a set $\mathcal{R}$ of red points with $N = |\mathcal{R}|$, it has been shown \hyperref[ref:blocking]{2} that at least N-1 points are needed to solve this problem. The case where only N-1 blue points are needed is exemplified in the picture below, and always applies to the special case when all points lie in row. In the general case, it has been shown that for $N>2$ there are cases where at least N blue points are required to solve the problem.
+Given a set $\mathcal{R}$ of red points, let $N = |\mathcal{R}|$. It has been shown \hyperref[ref:blocking]{2} that at least N-1 points are needed in a solution. The case where only N-1 blue points are needed is exemplified in the picture below, and always applies to the special case when all points lie in row. In the general case, it has been shown that for $N>2$, there are cases where at least N blue points are required to solve the problem.
 
 \begin{figure}[hb]
 \centering
@@ -185,7 +185,7 @@ In the general case, it has been proven \hyperref[ref:blocking]{2} that at most 
 
 
 \subsection{Complexity}
-Although not yet shown, the problem is suspected to be NP-hard \hyperref[ref:blocking]{2}, as a similar problem has been proven to be NP-hard. \hyperref[ref:alexander]{3}
+Although not yet shown, the problem is suspected to be \textsc{np}-hard \hyperref[ref:blocking]{2}, as a similar problem has been proven to be \textsc{np}-hard. \hyperref[ref:alexander]{3}
 
 \section{Algorithms}
 \subsection{General outline}
@@ -195,7 +195,7 @@ Although not yet shown, the problem is suspected to be NP-hard \hyperref[ref:blo
 For the set $\mathcal P$ of points (both red and blue) find the Delaunay triangulation and the Voronoi diagram.
 \item
 \label{alg:part2}
-For each edge in the Delaunay triangulation that connects two red points, \hyperref[sec:findCircle]{find a circle} with these two points on its perimeter and the circle's centre on the corresponding Voronoi edge and add these to the (initially empty) set of circles $\mathcal C$.
+For each edge in the Delaunay triangulation that connects two red points, \hyperref[sec:findCircle]{find a circle} with these two points on its perimeter and the centre of the circle on the corresponding Voronoi edge and add these to the (initially empty) set of circles $\mathcal C$.
 \item
 Calculate the \hyperref[sec:arrangement]{arrangement} $\mathcal A$ of the circles $\mathcal C$.
 \item
@@ -203,9 +203,9 @@ Calculate the \hyperref[sec:arrangement]{arrangement} $\mathcal A$ of the circle
 \item
 \hyperref[sec:gurobi]{Find a minimum subset} $\mathcal P^{**}$ of $\mathcal P^*$, so that every circle in $\mathcal C$ is covered by at least one point.
 \item
-Set $\mathcal P$ to $\mathcal P^{**} \cup Red(\mathcal P )$, where  $Red(\mathcal P )$ denotes the set of red points in $\mathcal P$. Calculate the Delaunay triangulation for $\mathcal P$.
+Set $\mathcal P$ to $\mathcal P^{**} \cup Red(\mathcal P )$, where  $Red(\mathcal P )$ denotes the set of original red points in $\mathcal P$. Calculate the Delaunay triangulation for $\mathcal P$.
 \item
-For every red edge still in the triangulation, calculate the length of its dual in the Voronoi graph. If no red edges exist in the triangulation, terminate. If the sum of the calculated lengths is sufficiently small (smaller than 300*N), use \hyperref[sec:rand]{random search } to find an optimal solution. Otherwise, restart from \hyperref[alg:part2]{2}.
+For every red edge still in the triangulation, calculate the length of its dual in the Voronoi graph. If no red edges exist in the triangulation, terminate. If the sum of the calculated lengths is sufficiently small, use \hyperref[sec:rand]{random search } to find an optimal solution. Otherwise, restart from \hyperref[alg:part2]{2}.
 \end{enumerate}
 
 \subsection{Finding circles corresponding to unsatisfied edges}
@@ -227,10 +227,10 @@ For a {\bf segment}, the smallest circle with $p_1$ and $p_2$ on its perimeter, 
 A relatively difficult task is that of finding a point in the interior of an arbitrary face, given two point $p_1$ and $p_2$ known to be on the boundary of the face. This can be solved using the following algorithm, which is exemplified in figure 5.
 
 \begin{figure}[hb]
-\includegraphics[width=0.4\textwidth]{pictures/PointInFace.png}
-\includegraphics[width=0.3\textwidth]{pictures/PointInFace2.png}
+\includegraphics[width=0.55\textwidth]{pictures/PointInFace3.png}
+\includegraphics[width=0.45\textwidth]{pictures/PointInFace4.png}
  \caption[Close up of \textit{Hemidactylus} sp.]
-   {The graphic shows the application of the algorithm descibed in this section to an exemplary face. The black point in the right picture is the point $p_m$ in step 1. The blue line segment (right and left) is that mentioned in step 3 and the yellow segment (right) is the intersection mentioned in step 4.}
+   {The graphic shows the application of the algorithm descibed in this section to an exemplary face. The $\times$ symbol marks the point chosen to represent the face.}
 \end{figure}
 \begin {enumerate}
 \item
@@ -240,7 +240,7 @@ Find the line $l$ that is going through $p_m$ and is perpendicular to the edge b
 \item
 Find the segment $s$ that is the intersection of $l$ and the smallest rectangle large enough to contain all circles of the arrangement. This step is needed because the the type of \textsc{cgal}-arrangement used does not support lines and is described here only for the sake of completeness.
 \item
-Find the segment that is the intersection of the segment $s$ and the face itself.
+Find the segment \emph{t} that is the intersection of the segment $s$ and the face itself.
 \item
 Any point except the endpoints of this segment are inside the face. The midpoint of the segment is chosen.
 \end{enumerate}
@@ -262,7 +262,7 @@ Stated in this way, the problem can be solved relatively efficiently with an int
 \label{sec:rand}
 Random search is a direct search method that does not require the derivative of the function to be minimized. It is algorithmically simple, and in general terms work as follows:
 
-To minimize a function $f : \mathds{R}^n \rightarrow \mathds{R}$, start with a (potentially random)  solution $x :  \mathds{R}^n$ and do the following:
+To minimize a function $f : \mathds{R}^n \rightarrow \mathds{R}$, start with a (potentially random)  solution $x :  \mathds{R}^n$ and do the following:\newpage
 
 \begin{lstlisting}[mathescape]
 while (f(x) > 0 )
@@ -276,7 +276,7 @@ There are several candidates for choosing the objective function \emph{f}, for e
 \section{Results}
 
 \subsection{Graphical interface}
-In order to easily specify new problems, and to visualize the process of solving a problem, a minimalistic graphical interface was implemented. It has methods for adding, moving and removing points. It automatically updates and draws the Voronoi diagram corresponding to the set of points used in the current iteration of the above mentioned algorithm, and also a set of Delaunay circles corresponding to the red edges in this Voronoi diagram.
+In order to easily specify new problems, and to visualize the problem-solving process, a minimalistic graphical interface was implemented. It has methods for adding, moving and removing points. It automatically updates and draws the Voronoi diagram corresponding to the set of points used in the current iteration of the above mentioned algorithm, and also a set of Delaunay circles corresponding to the red edges in this Voronoi diagram.
 
 Additionally, methods for saving and loading configurations were added.
 
@@ -290,7 +290,20 @@ Additionally, methods for saving and loading configurations were added.
 
 \subsection{Command line parameters}
 
-It's also possible to start the program without using the \textsc{GUI}. To do so, either the name of an existing file or "random" followed by an integer N has to be provided as command line parameter. If the first command line parameter is "random", a problem consisting of N randomly placed points is generated and solved. Afterwards, a result will be printed as a series of comma-separated numbers with the pattern: the number of red points, the number of blue points used to solve the generated problem, the time in ms to find the solution, the number of iterations of phase 1 (algorithm 4.1) and the number of iterations of phase 2 (randomized search).
+It's also possible to start the program without using the \textsc{gui}. To do so, either the name of an existing file or "random" followed by an integer N has to be provided as command line parameter. If the first command line parameter is "random", a problem consisting of N randomly placed points is generated and solved. Afterwards, a result will be printed as a series of comma-separated numbers with the pattern
+
+\begin{itemize}
+\item
+the number of red points
+\item
+the number of blue points used to solve the generated problem
+\item
+the time to find the solution in milliseconds
+\item
+the number of iterations of phase 1 (algorithm 4.1)
+\item
+the number of iterations of phase 2 (randomized search).
+\end{itemize}
 
 If a filename is provided, the problem saved in the named file is solved (without \textsc{gui}) and the same information as above is printed.
 \subsubsection*{Example}
@@ -300,22 +313,22 @@ user@computer:~/path/\textdollar{} ./separator random 6\newline
 user@computer:~/path/\textdollar{}
 }
 \newline \newline
-This output shows that six blue points were used to solve the problem. To do so, phase 1 iterated 7 times and phase 2 iterated 9355 times. It took 2,67 seconds to find the solution.
+This output shows that six blue points were used to solve a problem of size 6. To do so, phase 1 iterated 7 times and phase 2 iterated 9355 times. It took 2,67 seconds to find the solution.
 
 
 
 \subsection{Automated testing and debugging}
 The \textsc{gui}-less mode was designed to be used for automatation, such as the provided by the \texttt{randomtest} and \texttt{reruntest} scripts.
 
-The \texttt{randomtest} script will randomized problems of a specified size, a certain number of times (this is specified in the script). If a problem could not be solved within 5 minutes, it is considered to have \emph{timed out}, and is stored in the subfolder \emph{testing}.
+The \texttt{randomtest} script will randomize problems of a specified size, a certain number of times (this is specified in the script). If a problem could not be solved within 5 minutes, it is considered to have \emph{timed out}, and the problem is stored in the subfolder \emph{testing}.
 
 The script \texttt{reruntest} will run all tests in the \emph{testing} subfolder again, and remove them after completion. If a test again times out, a new file will be created in the same folder. This is to ensure that a correct solution is found for all problems.
 
-When running with \textsc{GUI} enabled, the last used configuration is always saved in the file \emph{latest.cnfg}. This means that in case of unexpected behavior, for example a crash, the configuration on which it occured can always be recovered and examined.
+When running with \textsc{gui} enabled, the last used configuration is always saved in the file \emph{latest.cnfg}. This means that in case of unexpected behavior, for example a crash, the configuration on which it occured can always be recovered and examined.
 
 \subsection{Speed}
 \label{speed}
-The problem of finding a blocking set of blue points is computationally hard since the set-cover problem is NP-hard, but also by its own, assuming the conjuncture in \hyperref[ref:blocking]{2} is true. This complexity is reflected in the time it takes to solve a problem, shown in figure 4.
+The problem of finding a blocking set of blue points is computationally hard since the set-cover problem is \textsc{np}-hard, but also by its own, assuming the conjuncture in \hyperref[ref:blocking]{2} is true. This complexity is reflected in the time it takes to solve a problem, shown in figure 4.
 
 The figure shows the average and median time of solving a problem with between 5 to 13 points. Due to the existence of local minima in the search space explored by the random search algorithm, there is a risk that a run takes unusually long time. Such statistical \emph{outliers} can greatly impact the total average, but do not impact the median value. Thus both the average and median execution time is shown in the graph below.
 
@@ -329,7 +342,7 @@ The figure shows the average and median time of solving a problem with between 5
 \end{figure}
 
 
-The graph is based on 120 randomly generated problems for each problem size, excluding the runs that ended with a timeout. The execution time was measured on a machine with an Intel Core 2 Duo 2.00GHz \textsc{cpu} and with 2GB of RAM storage.
+The graph is based on 120 randomly generated problems for each problem size, excluding the runs that ended with a timeout. The execution time was measured on a machine with an Intel Core 2 Duo 2.00GHz \textsc{cpu} and with 2\textsc{gb} of \textsc{ram} storage.
 
 \subsection{Timeout and non-optimal solutions}
 During solving, there is a risk of a timeout occuring or that a solution is found that is believed not to be optimal (more blue points than red points). In the statistics which was shown \hyperref[sec:speed]{above}, runs that ended with a timeout have been excluded as the impact on time is too large (a timeout occurs after 300 seconds). The total number of timeouts and non-optimal solutions are shown below in figure 8.
@@ -370,16 +383,18 @@ It can be seen that the median value is always much lower than the average. From
 
 This assumption is further strenghtened by the average number of iterations in the cases where a timeout occurred. This number is much higher than the average, and is presumably just bounded by the timeout time (300 seconds). It is likely that in most cases, no solution would be found no matter how long the randomized search phase would continue.
 
-This means that there are some near-optimal solutions that do not lie in the neighbourhood of a true optimal solution, or that the landscape between the two is irregular making the optimal solution difficult or impossible to reach with a simple randomized search. One solution could be to use more sophisticated search algorithms, such as tabu search or a genetic algorithm. In this case however, we believe that a better solution could be to try to detect when the algorithm cannot converge. The statistics show that the median number of iterations is relatively low in the cases where an optimal solution is found (i.e. when a solution is found, it is found quickly). Thus if a solution is not found within an estimated number of iterations (for example a constant factor higher than a known median value), the algorithm could go back to phase 1, and find a new near-optimal solution which might or might not be closer to an optimum.
+This means that there are some near-optimal solutions that do not lie in the neighbourhood of a true optimal solution, or that the landscape between the two is irregular making the optimal solution difficult or impossible to reach with a simple randomized search. One solution could be to use more sophisticated search algorithms, such as tabu search or genetic algorithms. In this case however, we believe that a better solution could be to try to detect when the solver cannot converge.
+
+The statistics show that the median number of iterations is relatively low in the cases where an optimal solution is found (i.e. when a solution is found, it is found rather quickly). Thus if a solution is not found within an estimated number of iterations (for example a constant factor higher than a known median value), the algorithm could go back to phase 1, and find a new near-optimal solution which might or might not be closer to an optimum.
 
 \subsection{Correctness of the calculated solutions}
 \subsubsection*{Inexact calculations}
 
 The numbers used in the algorithm implementation are mostly floating point numbers. While calculations involving floating point numbers are usually not precise, the \textsc{cgal} library offers the possibility to perform 100\% exact calculations, although with the disadvantage of a notable decrease in performance. For this reason, only step 2 and step 6 (see \hyperref[ref:Algorithm]{section 4.1}) of the algorithm are done with full precision.
 
-It is theoretically possible that a set of blue points is found, that is believed to cover all circles, when it in reality does not (or vice versa). Note that the Delaunay triangulation that is later constructed using the found points does not depend on the calculated circles and their precision. It is when this Delaunay triangulation is free from red-red neighbours that the program terminates, and thus the correctness of the final solution is not affected by the inexactness of the intermediate calculation, although it is possible that more iterations are performed than what in fact is necessary.
+It is theoretically possible that a set of blue points is found, that is believed to cover all circles, when it in reality does not (or vice versa). The Delaunay triangulation that is later constructed using the found points does not depend on the calculated circles and their precision. It is when this Delaunay triangulation is free from red-red neighbours that the program terminates, and thus the correctness of the final solution is not affected by the inexactness of the intermediate calculation, although it is possible that more iterations are performed than what is in fact necessary.
 
-The solutions returned are always correct (although not necessarily optimal), since the construction of the Delaunay triangulation uses exact calculations. It is therefore not possible that a solution returned by our program is in fact a false solution, or that a true solution is overlooked. But it is possible that a solution that uses more blue points than necessary will be accepted and returned. The only way to guarantee that the returned solutions are always correct \emph{and minimal} would be to do all calculations in an exact way. As exact calculations are costly, it is preferable to perform inexact calculations and in the rare cases where a non-optimal solution is found, try solving the problem again from the beginning.
+The solutions returned are always correct (although not necessarily optimal), since the construction of the Delaunay triangulation uses exact calculations. It is therefore not possible that a solution returned is in fact a false solution, or that a true solution is overlooked. But it is possible that a solution that uses more blue points than necessary will be accepted and returned. The only way to guarantee that the returned solutions are always correct and \emph{minimal} would be to do all calculations in an exact way. As exact calculations are costly, it is preferable to perform inexact calculations and in the rare cases where a non-optimal solution is found, try solving the problem again from the beginning.
 
 \subsubsection*{Finding a point in the interior of a face}
 
@@ -411,8 +426,9 @@ To easily build the simple \textsc{gui} for our program, we used the \textsc{QT}
 
 Finally, we used \emph{git} for revision control and to simplify our collaboration. The source code for the project is available at \newline 
 \url{https://github.com/martin-mfg/voronoi-thesis-tester}
+\newpage
 
-\section{references}
+\section{References}
 \small
 \begin{enumerate}
 \item
@@ -444,13 +460,15 @@ Proc. 26th European Workshop on Computational Geometry, pages 73-76, 2010.
 \item
 \label{ref:karp}
 Richard M. Karp
+
 Reducibility Among Combinatorial Problems.
+
 In: R. E. Miller, J. W. Thatcher (Hrsg.): Complexity of Computer Computations. Plenum Press, New York 1972, S. 85-103.
 
 \end{enumerate}
 
 
-\subsection*{images}
+\subsection*{Images}
 \begin{itemize}
 \item
 Delaunay circumcircles, GNU Free Documenation Licence, N\"u es
